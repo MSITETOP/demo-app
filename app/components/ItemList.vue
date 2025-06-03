@@ -150,7 +150,7 @@
                                     class="text-xs font-regular text-white p-0 w-cust-btn justify-center"
                                     :label="item.btnText"
                                 />
-                                <template #body>
+                                <template #content>
                                     <SliderForm/>
                                 </template>
                             </B24Slideover>

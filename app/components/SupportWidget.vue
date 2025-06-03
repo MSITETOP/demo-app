@@ -11,7 +11,7 @@
 </script>
 
 <template>
-    <B24Slideover title=" " description=" " :side="store.modeView === 'mobile' ? 'top' : 'right'">
+    <B24Slideover  :side="store.modeView === 'mobile' ? 'top' : 'right'">
         <div v-if="mobileView" class="desc-view">
             <div class="bg-btn rounded-2xs text-center pt-3 pb-3">
                 <span class="text-base-600 uppercase text-xs font-semibold"><Chats3Icon class="w-6 h-6 inline" />Чат с поддержкой</span>
@@ -23,7 +23,7 @@
                 <Chats3Icon class="w-6 h-6 text-white" />
             </div>
         </div>
-        <template #body>
+        <template #content>
             <SupportChat/>
         </template>
     </B24Slideover>
