@@ -19,7 +19,7 @@
                                 <span>Геннадий <span class="blue-530">ПеТрович</span></span>
                             </div>
                             <div class="text-base-600 text-xs">
-                                <span>AI-ассистент и чат-бот</span>
+                                <span>что то новенькое</span>
                             </div>
                         </div>
                     </div>
