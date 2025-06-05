@@ -1,8 +1,8 @@
 <script setup>
 const B24FormConfig = {
-    formId: 77,
-    secret: 'pstxkg',
-    loaderScript: 'https://upload-portal.storage.yandexcloud.net/crm/form/loader_77_pstxkg.js',
+    formId: 76,
+    secret: '9defil',
+    loaderScript: 'https://upload-portal.storage.yandexcloud.net/crm/form/loader_76_9defil.js',
 }
 
 onMounted(async () => {

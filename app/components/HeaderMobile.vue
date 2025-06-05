@@ -6,9 +6,6 @@
     import Cross45Icon from '@bitrix24/b24icons-vue/actions/Cross45Icon';
     import { useGlobalState } from '~/stores/globalState';
     import { computed } from 'vue';
-    const store = useGlobalState();
-    const balance = computed(() => store.balance);
-    const linkToInstuction = computed(() => store.linkToInstuction);
     const isMenuOpen = ref(false);
     const menuId = 'b_menu_'+Math.floor(Math.random()*1000000);
 
@@ -56,10 +53,6 @@
                 <Cross45Icon class="text-base-600 w-8 h-8" />
             </div>
             <div class="">
-                <div>
-                    <div class="font-normal text-lg text-base-600">Баланс</div>
-                    <div class="font-semibold">{{balance}}</div>
-                </div>
                 <TopUpBtn :class-name="['size-full','flex','justify-center', 'mt-4']"/>
             </div>
             <nav class="bg-white rounded-lg mt-6 nav-mobile">
@@ -71,7 +64,7 @@
             </nav>
             <div class="bg-white rounded-lg mt-6 pt-5 pb-5">
                 <B24Button
-                    :to="linkToInstuction"
+                    to="https://vkvideo.ru/playlist/-24162245_45684532"
                     :icon="RecordVideoIcon"
                     color="link"
                     target="_blank"

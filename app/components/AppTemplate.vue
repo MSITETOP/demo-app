@@ -33,8 +33,10 @@
     <template v-else>
         <Header/>
         <main class="main-style">
+            <div class="container mx-auto mt-8 mb-8">
+                <h1 :class="['text-4.5xl', ...h1Classes]">{{store.title}}</h1>
+            </div>
             <div :class="['container mx-auto pt-6 pb-6 bg-white', ...containerClasses]">
-                <h1 :class="['text-4.5xl text-center', ...h1Classes]">{{store.title}}</h1>
                 <slot/>
             </div>
         </main>
@@ -43,10 +45,7 @@
 </template>
 
 <style>
-    .main-style {
-        padding-top: 60px;
-        min-height: calc(100vh - 84px);
-    }
+
     .rounded-lg-top {
         border-top-left-radius: 12px;
         border-top-right-radius: 12px;

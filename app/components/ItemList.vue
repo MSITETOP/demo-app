@@ -1,4 +1,3 @@
-
 <script setup>
     import Plus20Icon from '@bitrix24/b24icons-vue/actions/Plus20Icon';
     import CrossCircle70Icon from '@bitrix24/b24icons-vue/actions/CrossCircle70Icon';
@@ -18,7 +17,8 @@
         },
     });
     const isClient = ref(false);
-    onMounted(() => {
+
+    onMounted(async () => {
         isClient.value = true;
     });
     
@@ -138,19 +138,25 @@
                     <div v-if="item.description" class="text-base-600 text-lg mt-4">{{ item.description }}</div>
                 </div>
                 <div class="price-and-btn">
-                    <div class="flex gap-3">
+                    <div class="flex gap-4">
                         <div class="whitespace-nowrap">
-                            <span class="font-semibold text-2xl-cust">{{ item.price || 'По запросу' }}</span>
-                            <span v-if="item.formPayment" class="font-normal text-lg text-base-600"> / {{ item.formPayment }}</span>
+                            <span class="text-2xl-cust"> 
+                                <template v-if="Array.isArray(item.price)">
+                                    {{ item.price.join('\n') }}
+                                </template>
+                                <template v-else>
+                                    {{ item.price || 'По запросу' }}
+                                </template>
+                            </span>
                         </div>
                         <template v-if="item.click && item.click === 'formShow'">
-                            <B24Slideover title=" " description=" " :side="store.modeView === 'mobile' ? 'top' : 'right'">
+                            <B24Slideover  :b24ui="{ header: 'form-widget-header', body: 'form-widget-body' }" :side="store.modeView === 'mobile' ? 'top' : 'right'">
                                 <B24Button
                                     color="primary"
                                     class="text-xs font-regular text-white p-0 w-cust-btn justify-center"
                                     :label="item.btnText"
                                 />
-                                <template #content>
+                                <template #body>
                                     <SliderForm/>
                                 </template>
                             </B24Slideover>
@@ -216,6 +222,15 @@
 </template>
 
 <style>
+    .form-widget-header {
+        margin-top: 0;
+    }
+    .form-widget-header .min-h-2xl {
+        min-height: 0;
+    }
+    .form-widget-body {
+        margin-top: 0;
+    }
     .w-cust-btn {
         width: 155px;
     }

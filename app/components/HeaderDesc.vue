@@ -5,8 +5,6 @@
     import { useGlobalState } from '~/stores/globalState';
     import { computed } from 'vue';
     const store = useGlobalState();
-    const balance = computed(() => store.balance);
-    const linkToInstuction = computed(() => store.linkToInstuction);
 </script>
 
 <template>
@@ -46,7 +44,7 @@
                             label="История транзакций"
                         />
                         <B24Button
-                            :to="linkToInstuction"
+                            to="https://vkvideo.ru/playlist/-24162245_45684532"
                             :icon="RecordVideoIcon"
                             color="link"
                             target="_blank"
@@ -65,10 +63,6 @@
                     </li>
                 </ul>
                 <div class="flex gap-5 items-center">
-                    <div>
-                        <div class="font-normal text-lg text-base-600">Баланс</div>
-                        <div class="font-semibold">{{balance}}</div>
-                    </div>
                     <TopUpBtn/>
                 </div>
             </div>

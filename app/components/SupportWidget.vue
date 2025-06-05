@@ -11,7 +11,7 @@
 </script>
 
 <template>
-    <B24Slideover  :side="store.modeView === 'mobile' ? 'top' : 'right'">
+    <B24Slideover :b24ui="{ header: 'support-widget-header', body: 'support-widget-body' }" :side="store.modeView === 'mobile' ? 'top' : 'right'">
         <div v-if="mobileView" class="desc-view">
             <div class="bg-btn rounded-2xs text-center pt-3 pb-3">
                 <span class="text-base-600 uppercase text-xs font-semibold"><Chats3Icon class="w-6 h-6 inline" />Чат с поддержкой</span>
@@ -23,13 +23,22 @@
                 <Chats3Icon class="w-6 h-6 text-white" />
             </div>
         </div>
-        <template #content>
+        <template #body>
             <SupportChat/>
         </template>
     </B24Slideover>
 </template>
 
 <style>
+    .support-widget-header {
+        margin-top: 0;
+    }
+    .support-widget-header .min-h-2xl {
+        min-height: 0;
+    }
+    .support-widget-body {
+        margin-top: 0;
+    }
     .desc-view .bg-btn {
         background-color: #F4F7F8;
     }
