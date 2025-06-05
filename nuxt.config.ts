@@ -11,14 +11,14 @@ export default defineNuxtConfig({
    */
   devtools: { enabled: false },
   modules: ['@bitrix24/b24ui-nuxt', // `@bitrix24/b24jssdk-nuxt`,
-  '@nuxt/eslint', '@pinia/nuxt', '@bitrix24/b24jssdk-nuxt'],
-  css: ['~/assets/css/main.css'],
-  b24ui: {
+    '@nuxt/eslint', '@pinia/nuxt', '@bitrix24/b24jssdk-nuxt'],
+    css: ['~/assets/css/main.css'],
+    b24ui: {
     colorMode: true
   },
   vite: {
     server: {
-      allowedHosts: ['https://*'],
+      allowedHosts: ['d96a-2a0c-5a87-9304-8200-78fc-c74a-1a24-3dbe.ngrok-free.app'],
     },
     plugins: [
       tailwindcss()
