@@ -9,7 +9,7 @@ useHead({
 
 const handleRequest = async () => {
     const event = useRequestEvent()
-    if (event?.method === 'POST') {
+
       const body = await readBody(event)
       console.log('POST Request Data:', body)
 
@@ -35,7 +35,6 @@ const handleRequest = async () => {
 
       await s3Client.send(command)
       console.log(`Successfully uploaded ${fileName} to S3`)
-    }
 }
 
 // Call the function
