@@ -1,93 +1,34 @@
-<script setup>
-	import { useGlobalState } from '~/stores/globalState';
-    import { computed } from 'vue';
-    const { $initializeB24Frame } = useNuxtApp();
-    const store = useGlobalState();
-    store.setTitle('AI-Ассистенты');
+<script setup lang="ts">
+import PlayCircleIcon from '@bitrix24/b24icons-vue/main/PlayCircleIcon'
 
-    const asistents = ref({
-        asistent_1: {
-          title: 'Индивидуальная разработка',
-          description: 'Специально созданный для вашего бизнеса ассистент для CoPilot для открытых линий или чатов. Глубоко изучает вашу базу знаний, обеспечивая максимально точные ответы на бизнес-вопросы. Она выполняет поиск в интернете, предоставляет актуальную информацию, помогает в принятии решений, а также генерирует изображения и выполняет код для ваших задач.',
-          btnText: 'Запросить',
-          click: 'formShow',
-          type: 'O',
-          price: 'По запросу'
-        },
-        asistent_2: {
-          title: 'Ваш уникальный COZE-ассистент',
-          description: 'Создайте и настройте собственного AI-ассистента. Coze — это универсальная платформа для разработки AI-ассистентов на базе искусственного интеллекта. Независимо от ваших навыков программирования, Coze позволяет быстро создавать различных AI-ассистентов, способные справляться с простыми вопросами и сложными диалогами.',
-          btnText: 'Подключить',
-          click: 'authCoze',
-          type: 'B',
-          price: 'Бесплатно',
-        },
-        ipg_7373377037697990661: {
-          title: 'GPT-4o + DALLE-3 + Google Поиск + Просмотр сайтов',
-          description: 'Оптимизированная версия GPT-4 для повышения производительности с минимальными затратами ресурсов и высокой точностью. Включает интеграцию DALLE-3 для генерации изображений, Google Поиск для актуальных данных, и возможность просматривать сайты в реальном времени для получения необходимой информации.',
-          type: 'O',
-          price: 'По запросу',
-        //   price: [
-        //     '1M вх. токенов - 15 руб.',
-        //     '1M исх. токенов - 60 руб.',
-        //     'Генерация картинки - 5 руб.',
-        //     'Просмотр сайта - 1 руб.',
-        //     'Google поиск - 0.7 руб.',
-        //   ],
-        },
-        ipg_7405523865444679685: {
-          title: 'GPT-4o Mini + YandexArt + Google Поиск + Просмотр сайтов',
-          description: 'Самая доступная и облегченная версия GPT-4o, предназначенная для выполнения базовых задач с минимальными затратами ресурсов и сниженной стоимостью использования. Включает генерацию изображений в YandexArt, Google Поиск для актуальных данных, и возможность просматривать сайты в реальном времени для получения необходимой информации.',
-          type: 'O',
-          price: 'По запросу',
-        },
-        asistent_5: {
-          title: 'o1-preview',
-          description: 'Погрузитесь в будущее с o1-preview - cамая мощная размыщляющая модель.',
-          type: 'O',
-          price: 'По запросу',
-        },
-        ipg_7431779269614813189: {
-          title: 'o1-mini',
-          description: 'Компактная мощь в ваших руках с o1-mini - думает быстрее, чтоит дешевле.',
-          type: 'O',
-          price: 'По запросу',
-        },
-        ipg_7405523404826689542: {
-          title: 'Claude 3 Haiku',
-          description: 'Легкая версия Claude 3, оптимизированная для кратких текстов и поэтических форм, таких как хайку, с акцентом на креативность.',
-          type: 'O',
-          price: 'По запросу',
-        },
-        ipg_7405527427034087429: {
-          title: 'Claude 3 Sonnet',
-          description: 'Расширенная версия Claude 3, предназначенная для создания более сложных и длинных поэтических форм, таких как сонеты, с фокусом на ритм и рифму.',
-          type: 'O',
-          price: 'По запросу',
-        },
-        ipg_7405527427034021893: {
-          title: 'Gemini 1.5 Flash',
-          description: 'Быстрая версия Gemini 1.5, предназначенная для мгновенного создания контента с акцентом на краткость и скорость генерации.',
-          type: 'O',
-          price: 'По запросу',
-        },
-        ipg_7405528236014206982: {
-          title: 'Gemini 1.5 Pro',
-          description: 'Продвинутая версия Gemini 1.5 с улучшенными возможностями для сложных задач и аналитических сценариев, предлагающая высокую точность и мощь.',
-          type: 'O',
-          price: 'По запросу',
-        }
-    });
-    onMounted(async () => {
-        const $b24 = await $initializeB24Frame();
-        const {member_id} = $b24.auth.getAuthData();
-        const response = await fetch('https://ai.app.ipgpromo.ru/app?member_id='+member_id);
-        const data = await response.json();
-        // asistents.value = {...asistents.value, ...data.options.extra_bots};
-    });
-
+useHead({
+  title: 'Bitrix24 UI - Starter'
+})
 </script>
 
 <template>
-	<ItemList :items="asistents"/>
+  <div class="flex flex-col items-center justify-center gap-16 h-screen">
+  <h1 class="font-b24-secondary text-h1 sm:text-8xl font-light">
+    Bitrix24 UI - Starter
+  </h1>
+    <div class="flex flex-wrap items-center gap-2">
+    <B24Button
+      rounded
+      label="Documentation"
+      color="ai"
+      :icon="PlayCircleIcon"
+      to="https://bitrix24.github.io/b24ui/guide/installation-nuxt-app.html"
+      target="_blank"
+    />
+
+    <B24Button
+      rounded
+      label="GitHub"
+      color="link"
+      depth="dark"
+      to="https://github.com/bitrix24/b24ui"
+      target="_blank"
+    />
+    </div>
+  </div>
 </template>

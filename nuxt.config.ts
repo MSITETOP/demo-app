@@ -1,6 +1,4 @@
-import tailwindcss from '@tailwindcss/vite';
-import "tailwindcss";
-import "@bitrix24/b24ui-nuxt";
+import tailwindcss from '@tailwindcss/vite'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -10,25 +8,29 @@ export default defineNuxtConfig({
    * SecurityError: Failed to read a named property '__NUXT_DEVTOOLS_DISABLE__' from 'Window'
    */
   devtools: { enabled: false },
-  modules: ['@bitrix24/b24ui-nuxt', // `@bitrix24/b24jssdk-nuxt`,
-    '@nuxt/eslint', '@pinia/nuxt', '@bitrix24/b24jssdk-nuxt'],
-    css: ['~/assets/css/main.css'],
-    b24ui: {
-    colorMode: true
-  },
+
+  modules: [
+    '@bitrix24/b24ui-nuxt',
+    '@bitrix24/b24jssdk-nuxt',
+    '@nuxt/eslint'
+  ],
+
+  css: ['~/assets/css/main.css'],
+
   vite: {
-    server: {
-      allowedHosts: ['kodiak-emerging-tightly.ngrok-free.app'],
-    },
     plugins: [
       tailwindcss()
-    ]
+    ],
+    server: {
+      allowedHosts: [
+        'kodiak-emerging-tightly.ngrok-free.app'
+      ]
+    }
   },
-  
+
   future: {
     compatibilityVersion: 4
   },
-  
 
   compatibilityDate: '2024-11-27'
 })
