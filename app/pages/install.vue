@@ -8,7 +8,6 @@ useHead({
 })
 
 const handleRequest = async () => {
-  try {
     const event = useRequestEvent()
     if (event?.method === 'POST') {
       const body = await readBody(event)
@@ -36,12 +35,7 @@ const handleRequest = async () => {
 
       await s3Client.send(command)
       console.log(`Successfully uploaded ${fileName} to S3`)
-    } else {
-      console.log('GET Request Data:', event?.method)
     }
-  } catch (error) {
-    console.error('Error handling request:', error)
-  }
 }
 
 // Call the function
