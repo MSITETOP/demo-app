@@ -1,4 +1,4 @@
-# Bitrix24 UI Starter
+# День X
 
 Look at docs to learn more:
 

@@ -7,7 +7,11 @@ useHead({
 </script>
 
 <template>
-  <B24App>
-    <NuxtPage />
-  </B24App>
+  <ClientOnly>
+    <NuxtLayout>
+      <B24App>
+        <NuxtPage />
+      </B24App>
+    </NuxtLayout>
+  </ClientOnly>
 </template>

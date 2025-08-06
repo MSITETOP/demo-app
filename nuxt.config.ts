@@ -11,21 +11,35 @@ export default defineNuxtConfig({
 
   modules: [
     '@bitrix24/b24ui-nuxt',
-    '@bitrix24/b24jssdk-nuxt',
+    `@bitrix24/b24jssdk-nuxt`,
     '@nuxt/eslint'
   ],
 
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+    classSuffix: '',
+    storageKey: 'nuxt-color-mode',
+    disableTransition: true
+  },
+
   css: ['~/assets/css/main.css'],
 
+  //ssr: false,
+
   vite: {
+    server: {
+      // allow incoming requests from this host
+      allowedHosts: [
+        'simple-firm-possum.ngrok-free.app',
+        'dotingly-prospering-hawfinch.cloudpub.ru'
+      ],
+      // and don't forget CORS, if needed:
+      cors: true
+    },
     plugins: [
       tailwindcss()
-    ],
-    server: {
-      allowedHosts: [
-        'kodiak-emerging-tightly.ngrok-free.app'
-      ]
-    }
+    ]
   },
 
   future: {
