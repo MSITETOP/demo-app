@@ -13,9 +13,9 @@
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {
-    "@bitrix24/b24icons-vue": "^2.0.2",
-    "@bitrix24/b24jssdk-nuxt": "^0.4.3",
-    "@bitrix24/b24ui-nuxt": "^0.6.8",
+    "@bitrix24/b24icons-vue": "latest",
+    "@bitrix24/b24jssdk-nuxt": "^0.4.5",
+    "@bitrix24/b24ui-nuxt": "latest",
     "nuxt": "^3.17.5"
   },
   "devDependencies": {
