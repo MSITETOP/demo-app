@@ -19,22 +19,8 @@ const confetti = useConfetti()
 
 const isLoad = ref(false)
 const profile = ref({})
-const balance = ref(null)
 
 onMounted(async () => {
-  fetch('https://ai.app.ipgpromo.ru/balance?member_id=362c1663e59da74887e85513efa10a6a')
-  .then(response => {
-    if (!response.ok) throw new Error('Ошибка сети');
-    return response.json(); // Преобразуем в JSON
-  })
-  .then(data => {
-    balance.value = data
-    //console.log('Данные:', data);
-  })
-  .catch(error => {
-    console.error('Ошибка:', error);
-  });
-
   initB24Helper($b24, [LoadDataType.Profile])  
   .then(data => {
     //console.log(data);
@@ -55,9 +41,9 @@ onMounted(async () => {
         <img src="/logo.png" alt="День Х" class="h-20 my-1 ml-4">
         <div>
           <h1 class="font-semibold text-h3">
-            День <span class="text-blue-500">X</span>
+            Robo<span class="text-extranet">REST</span>
           </h1>
-          <p class="text-base-600 text-xs">Поздравление с праздниками</p>
+          <p class="text-base-600 text-xs">Универсальный конструктор роботов и активити БП</p>
         </div>
       </NuxtLink>
 
