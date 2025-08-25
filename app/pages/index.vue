@@ -1,129 +1,133 @@
+<template>
+  <div class="container mx-auto p-6">
+    <!-- Header with title and add button -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-2xl font-bold text-gray-800">Мои активити и роботы</h1>
+      <B24Button 
+        color="primary" 
+        size="md"
+        @click="addActivity"
+      >
+        <B24Icon name="plus" class="mr-2" />
+        + добавить активити / робота
+      </B24Button>
+    </div>
+
+    <!-- Activities Grid (3 columns) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div 
+        v-for="activity in activities" 
+        :key="activity.id"
+        class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+      >
+        <!-- Activity card header -->
+        <div class="flex justify-between items-start mb-3">
+          <div class="flex items-center">
+              <h3 class="font-semibold text-gray-800">{{ activity.name }}</h3>
+          </div>
+          
+          <!-- Edit button -->
+          <B24Button
+            color="secondary"
+            size="sm"
+            variant="outline"
+            @click="editActivity(activity.id)"
+            class="p-2"
+          >
+            <B24Icon name="edit" class="text-gray-600" >Редактировать</B24Icon>
+          </B24Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div v-if="activities.length === 0" class="text-center py-12">
+      <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <B24Icon name="robot" class="text-gray-400 w-8 h-8" />
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Нет созданных активити</h3>
+      <p class="text-gray-500 mb-6">Создайте свой первый активити или робота для начала работы</p>
+      <B24Button 
+        color="primary" 
+        @click="addActivity"
+      >
+        <B24Icon name="plus" class="mr-2" />
+        Создать первый активити
+      </B24Button>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
-import HrAutomationIcon from '@bitrix24/b24icons-vue/main/HrAutomationIcon'
-import UserCompanyIcon from '@bitrix24/b24icons-vue/common-b24/UserCompanyIcon'
-import PersonIcon from '@bitrix24/b24icons-vue/main/PersonIcon'
-import CompanyIcon from '@bitrix24/b24icons-vue/outline/CompanyIcon'
-import * as z from 'zod'
-import type { FormSubmitEvent } from '@bitrix24/b24ui-nuxt'
-
-useHead({
-  title: 'Test'
-})
-
-export interface ExampleProps {
-  title?: string
+interface Activity {
+  id: string
+  name: string
+  type: 'активити' | 'робот'
+  icon: string
+  endpoint: string
+  createdAt: Date
+  status: 'активный' | 'неактивный' | 'ошибка'
 }
 
-withDefaults(defineProps<ExampleProps>(), {
-  title: 'Heads up!'
-})
-
-definePageMeta({
-  layout: 'default'
-})
-
-
-const items = [
+// Sample data for demonstration
+const activities = ref<Activity[]>([
   {
-    label: 'Дни рождения',
-    icon: PersonIcon,
-    slot: 's1'
+    id: '1',
+    name: 'Отправка уведомлений',
+    type: 'активити',
+    icon: 'mail',
+    endpoint: 'https://api.example.com/notify',
+    createdAt: new Date('2024-01-15'),
+    status: 'активный'
   },
   {
-    label: 'Даты принятия на работу',
-    icon: HrAutomationIcon,
-    slot: 's2'
+    id: '2', 
+    name: 'Обработка заявок',
+    type: 'робот',
+    icon: 'robot',
+    endpoint: 'https://api.example.com/process',
+    createdAt: new Date('2024-01-10'),
+    status: 'активный'
   },
   {
-    label: 'Другие праздники компании',
-    icon: CompanyIcon,
-    slot: 's3'
-  },
-]
-const schema = z.object({
-  input: z.string().min(10),
-  inputNumber: z.number().min(10),
-  inputMenu: z.any().refine(option => option?.value === 'option-2', {
-    message: 'Select Option 2'
-  }),
-  inputMenuMultiple: z.any().refine(values => !!values?.find((option: any) => option.value === 'option-2'), {
-    message: 'Include Option 2'
-  }),
-  textarea: z.string().min(10),
-  select: z.string().refine(value => value === 'option-2', {
-    message: 'Select Option 2'
-  }),
-  selectMenu: z.any().refine(option => option?.value === 'option-2', {
-    message: 'Select Option 2'
-  }),
-  selectMenuMultiple: z.any().refine(values => !!values?.find((option: any) => option.value === 'option-2'), {
-    message: 'Include Option 2'
-  }),
-  chat: z.boolean().refine(value => value === true, {
+    id: '3',
+    name: 'Синхронизация данных',
+    type: 'активити',
+    icon: 'sync',
+    endpoint: 'https://api.example.com/sync',
+    createdAt: new Date('2024-01-05'),
+    status: 'неактивный'
+  }
+])
 
-  }),
-  livefeed: z.boolean().refine(value => value === true, {
+const addActivity = () => {
+  // Navigate to activity creation page
+  navigateTo('/activity/create')
+}
 
-  }),
-  radioGroup: z.string().refine(value => value === 'option-2', {
-    message: 'Select Option 2'
-  }),
-  range: z.number().max(20, { message: 'Must be less than 20' }),
-  timelivefeed: z.number().min(1).max(24)
-})
+const editActivity = (id: string) => {
+  // Navigate to activity edit page
+  navigateTo(`/activity/${id}`)
+}
 
-type Schema = z.input<typeof schema>
-const state = reactive<Partial<Schema>>({})
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit', 
+    year: 'numeric'
+  })
+}
 
+const getStatusClass = (status: string) => {
+  switch (status) {
+    case 'активный':
+      return 'bg-green-100 text-green-800'
+    case 'неактивный':
+      return 'bg-gray-100 text-gray-800'
+    case 'ошибка':
+      return 'bg-red-100 text-red-800'
+    default:
+      return 'bg-gray-100 text-gray-800'
+  }
+}
 </script>
-
-<template>
-  <B24Tabs :items="items" size="lg" class="w-full" > 
-    <template #s1="{ item }">
-      <B24Form
-      :state="state"
-      class="space-y-4"
-      @submit="onSubmit"
-    >
-      <B24FormField name="livefeed">
-        <B24Switch v-model="state.livefeed" label="Отправлять поздравление в ленту компании" />
-      </B24FormField>
-      <div v-if="state.livefeed">
-        <B24FormField name="livefeed" label="Текст поздравления">
-          <B24Textarea v-model="state.textarea" placeholder="" />
-        </B24FormField>
-        <B24FormField name="livefeed" label="Время отправки поздравления">
-          <B24InputNumber v-model="state.timelivefeed" defaultValue="24" min="1" max="24" />
-        </B24FormField>
-        <B24FormField name="livefeed" label="За сколько дней до события создавать поздравление">
-          <B24InputNumber v-model="state.timelivefeed" defaultValue="0" min="0" max="30" />
-        </B24FormField>
-        <B24FormField name="livefeed" label="За сколько дней до события создавать поздравление">
-          <B24InputNumber v-model="state.timelivefeed" defaultValue="0" min="0" max="30" />
-        </B24FormField>
-        <B24FormField name="livefeed" label="Кто будет видеть (отделы и пользователи)">
-          <B24Input v-model="state.timelivefeed"  />
-        </B24FormField>
-      </div>
-      <B24FormField name="chat">
-        <B24Switch v-model="state.chat" label="Создавать чат" />
-      </B24FormField>
-      <div v-if="state.chat">
-        <B24FormField name="text-chat" label="Текст для чата">
-          <B24Textarea v-model="state.textarea" placeholder="" />
-        </B24FormField>
-      </div>
-      </B24Form>
-    </template>
-    <template #s2="{ item }">
-      <div class="">
-      345
-      </div>
-    </template>
-    <template #s3="{ item }">
-      <div class="">
-      678
-      </div>
-    </template>
-  </B24Tabs>
-</template>

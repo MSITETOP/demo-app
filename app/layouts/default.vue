@@ -67,9 +67,7 @@ onMounted(async () => {
       </div>
     </div>
   </header>
-  <B24Container class="my-6 bg-white py-4 rounded-xl">
-    <slot />
-  </B24Container>
+  <slot />
 </template> 
 
 <style>
