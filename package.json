@@ -16,6 +16,8 @@
     "@bitrix24/b24icons-vue": "latest",
     "@bitrix24/b24jssdk-nuxt": "^0.4.5",
     "@bitrix24/b24ui-nuxt": "^1.0.2",
+    "@guolao/vue-monaco-editor": "^1.5.5",
+    "monaco-editor": "^0.52.2",
     "nuxt": "^3.17.5"
   },
   "devDependencies": {

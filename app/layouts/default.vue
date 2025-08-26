@@ -38,7 +38,7 @@ onMounted(async () => {
     <div class="flex justify-between items-center">
       <!-- Left side: Logo and app info -->
       <NuxtLink to="/" class="flex items-center gap-4">
-        <img src="/logo.png" alt="День Х" class="h-20 my-1 ml-4">
+        <img src="/logo.png" alt="День Х" class="h-20 my-1 ml-4 mb-4">
         <div>
           <h1 class="font-semibold text-h3">
             Robo<span class="text-extranet">REST</span>

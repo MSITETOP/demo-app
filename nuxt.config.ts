@@ -39,7 +39,15 @@ export default defineNuxtConfig({
     },
     plugins: [
       tailwindcss()
-    ]
+    ],
+    optimizeDeps: {
+      include: [
+        'monaco-editor/esm/vs/editor/editor.api',
+        'monaco-editor/esm/vs/language/typescript/ts.worker',
+        'monaco-editor/esm/vs/language/json/json.worker',
+        'monaco-editor/esm/vs/editor/editor.worker'
+      ]
+    }
   },
 
   future: {

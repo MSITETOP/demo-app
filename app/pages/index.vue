@@ -21,7 +21,7 @@
         class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow"
       >
         <!-- Activity card header -->
-        <div class="flex justify-between items-start mb-3">
+        <div class="flex justify-between items-start">
           <div class="flex items-center">
               <h3 class="font-semibold text-gray-800">{{ activity.name }}</h3>
           </div>
@@ -102,7 +102,7 @@ const activities = ref<Activity[]>([
 
 const addActivity = () => {
   // Navigate to activity creation page
-  navigateTo('/activity/create')
+  navigateTo('/activity/0')
 }
 
 const editActivity = (id: string) => {
