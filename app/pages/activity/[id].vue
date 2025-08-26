@@ -64,7 +64,7 @@
             class="grid grid-cols-12 gap-4 items-center p-4 bg-gray-50 rounded-lg"
           >
             <!-- Column 1: Field Code -->
-            <div class="col-span-4">
+            <div class="col-span-3">
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 Код поля
               </label>
@@ -77,7 +77,7 @@
             </div>
             
             <!-- Column 2: Field Name Input -->
-            <div class="col-span-7">
+            <div class="col-span-4">
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 Название поля
               </label>
@@ -89,7 +89,20 @@
               />
             </div>
             
-            <!-- Column 3: Delete Button -->
+            <!-- Column 3: Test Value Input -->
+            <div class="col-span-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Значение для тестирования
+              </label>
+              <input
+                v-model="field.testValue"
+                type="text"
+                placeholder="Введите тестовое значение"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
+            
+            <!-- Column 4: Delete Button -->
             <div class="col-span-1 flex justify-end">
               <B24Button
                 color="danger"
@@ -134,74 +147,58 @@
           <div 
             v-for="(field, index) in outputFields" 
             :key="field.id"
-            class="p-4 bg-gray-50 rounded-lg"
+            class="grid grid-cols-12 gap-4 items-center p-4 bg-gray-50 rounded-lg"
           >
-            <!-- Top row with 4 columns -->
-            <div class="grid grid-cols-12 gap-4 items-center mb-4">
-              <!-- Column 1: Field Code -->
-              <div class="col-span-3">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Код поля
-                </label>
-                <input
-                  type="text"
-                  :value="field.code"
-                  readonly
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 text-sm"
-                />
-              </div>
-              
-              <!-- Column 2: Field Name Input -->
-              <div class="col-span-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Название поля
-                </label>
-                <input
-                  v-model="field.name"
-                  type="text"
-                  placeholder="Введите название поля"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                />
-              </div>
-              
-              <!-- Column 3: Multiple Field Checkbox -->
-              <div class="col-span-4 flex items-center">
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input
-                    v-model="field.isMultiple"
-                    type="checkbox"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span class="text-sm text-gray-700">Множественное поле</span>
-                </label>
-              </div>
-              
-              <!-- Column 4: Delete Button -->
-              <div class="col-span-1 flex justify-end">
-                <B24Button
-                  color="danger"
-                  variant="outline"
-                  size="sm"
-                  @click="removeOutputField(index)"
-                  class="p-2"
-                  title="Удалить поле"
-                >
-                  <span class="text-red-600">✕</span>
-                </B24Button>
-              </div>
+            <!-- Column 1: Field Code -->
+            <div class="col-span-3">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Код поля
+              </label>
+              <input
+                type="text"
+                :value="field.code"
+                readonly
+                class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 text-sm"
+              />
             </div>
             
-            <!-- Bottom row: Full-width textarea for field value -->
-            <div class="w-full">
+            <!-- Column 2: Field Name Input -->
+            <div class="col-span-7">
               <label class="block text-sm font-medium text-gray-700 mb-1">
-                Значение поля
+                Название поля
               </label>
-              <textarea
-                v-model="field.value"
-                placeholder="Введите значение поля"
-                rows="3"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-y"
-              ></textarea>
+              <input
+                v-model="field.name"
+                type="text"
+                placeholder="Введите название поля"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
+            
+            <!-- Column 3: Multiple Field Checkbox -->
+            <div class="col-span-1 flex items-center">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  v-model="field.isMultiple"
+                  type="checkbox"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span class="text-sm text-gray-700">Множественное</span>
+              </label>
+            </div>
+            
+            <!-- Column 4: Delete Button -->
+            <div class="col-span-1 flex justify-end">
+              <B24Button
+                color="danger"
+                variant="outline"
+                size="sm"
+                @click="removeOutputField(index)"
+                class="p-2"
+                title="Удалить поле"
+              >
+                <span class="text-red-600">✕</span>
+              </B24Button>
             </div>
           </div>
           
@@ -226,24 +223,11 @@
         </div>
       </div>
 
-      <!-- Request Testing Section -->
+      <!-- Activity Code Section -->
       <div class="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-6">Тестирование запросов</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-6">Код активити</h2>
         
         <div class="space-y-6">
-          <!-- Input Parameters Textarea -->
-          <div class="w-full">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Входящие параметры
-            </label>
-            <textarea
-              v-model="testInputParams"
-              placeholder="Введите входящие параметры для тестирования в формате JSON"
-              rows="6"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono resize-y"
-            ></textarea>
-          </div>
-          
           <!-- Code Textarea -->
           <div class="w-full">
             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -252,11 +236,18 @@
             <textarea
               v-model="testCode"
               placeholder="Введите код для выполнения"
-              rows="8"
+              rows="16"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono resize-y"
             ></textarea>
           </div>
-          
+        </div>
+      </div>
+
+      <!-- Request Testing Section -->
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-6">Тестирование запросов</h2>
+        
+        <div class="space-y-6">
           <!-- Result Textarea -->
           <div class="w-full">
             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -265,7 +256,7 @@
             <textarea
               v-model="testResult"
               placeholder="Результат выполнения будет отображен здесь"
-              rows="6"
+              rows="12"
               readonly
               class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm font-mono resize-y"
             ></textarea>
@@ -296,13 +287,13 @@ interface InputField {
   id: string
   code: string
   name: string
+  testValue: string
 }
 
 interface OutputField {
   id: string
   code: string
   name: string
-  value: string
   isMultiple: boolean
 }
 
@@ -350,15 +341,15 @@ const loadActivityData = () => {
   
   // Load sample input fields
   inputFields.value = [
-    { id: '1', code: 'Field_input_1', name: 'Первое поле' },
-    { id: '2', code: 'Field_input_2', name: 'Второе поле' }
+    { id: '1', code: 'Field_input_1', name: 'Первое поле', testValue: '' },
+    { id: '2', code: 'Field_input_2', name: 'Второе поле', testValue: '' }
   ]
   fieldCounter.value = 3
   
   // Load sample output fields
   outputFields.value = [
-    { id: '1', code: 'Field_output_1', name: 'Результат обработки', value: '', isMultiple: false },
-    { id: '2', code: 'Field_output_2', name: 'Статус выполнения', value: '', isMultiple: false }
+    { id: '1', code: 'Field_output_1', name: 'Результат обработки', isMultiple: false },
+    { id: '2', code: 'Field_output_2', name: 'Статус выполнения', isMultiple: false }
   ]
   outputFieldCounter.value = 3
   
@@ -373,7 +364,8 @@ const addNewField = () => {
   const newField: InputField = {
     id: Date.now().toString(),
     code: `Field_input_${fieldCounter.value}`,
-    name: ''
+    name: '',
+    testValue: ''
   }
   inputFields.value.push(newField)
   fieldCounter.value++
@@ -394,7 +386,6 @@ const addNewOutputField = () => {
     id: Date.now().toString(),
     code: `Field_output_${outputFieldCounter.value}`,
     name: '',
-    value: '',
     isMultiple: false
   }
   outputFields.value.push(newField)
