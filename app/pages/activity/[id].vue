@@ -304,7 +304,17 @@
 
       <!-- Request Testing Section -->
       <div class="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-6">Тестирование запросов</h2>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-semibold text-gray-800">Тестирование запросов</h2>
+          <B24Button
+            color="primary"
+            @click="executeTest"
+            class="flex items-center gap-2"
+          >
+            <span>▶</span>
+            Выполнить тест
+          </B24Button>
+        </div>
         
         <div class="space-y-6">
           <!-- Output Fields Results -->
@@ -392,211 +402,147 @@
 
           <!-- Activity Execution Logs -->
           <div class="w-full">
-            <h2 class="text-xl font-semibold text-gray-800 mb-6">Логи</h2>
-        
-            <div class="bg-gray-50 text-green-400 p-4 rounded-md font-mono text-sm overflow-auto" style="height: 300px;">
-              <div class="space-y-1">
-                <!-- Session Start -->
-                <div class="text-cyan-400 border-b border-gray-700 pb-2 mb-2">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.000]</span>
-                  <span class="bg-cyan-600 px-2 py-0.5 rounded text-xs text-black font-bold">SESSION</span>
-                  <span class="text-cyan-400">🚀 Activity execution session started - ID: exec_847291</span>
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-lg font-semibold text-gray-800">Логи</h3>
+            </div>
+            
+            <!-- Terminal-style log container -->
+            <div class="bg-gray-50 rounded-lg border border-gray-300 h-80 overflow-y-auto font-mono text-sm">
+              <div class="p-4 space-y-2">
+                <!-- DEBUG logs -->
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 min-w-[80px] justify-center">
+                    DEBUG
+                  </span>
+                  <span class="text-gray-700 flex-1">
+                    [2024-08-26 23:15:01.123] Activity initialization started
+                  </span>
                 </div>
                 
-                <!-- Initialization Phase -->
-                <div class="text-gray-400 bg-gray-800 px-2 py-1 rounded text-xs mb-2">
-                  📋 INITIALIZATION PHASE
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 min-w-[80px] justify-center">
+                    DEBUG
+                  </span>
+                  <span class="text-gray-700 flex-1">
+                    [2024-08-26 23:15:01.145] Input parameters received: {"userId": 123, "operation": "get_deals"}
+                  </span>
                 </div>
                 
-                <div class="text-gray-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.123]</span>
-                  <span class="bg-gray-700 px-2 py-0.5 rounded text-xs text-gray-300">DEBUG</span>
-                  <span class="text-gray-300">⚙️ Activity framework initialized</span>
-                </div>
-                <div class="text-gray-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.145]</span>
-                  <span class="bg-gray-700 px-2 py-0.5 rounded text-xs text-gray-300">DEBUG</span>
-                  <span class="text-gray-300">📥 Input validation: {"userId": 123, "operation": "get_deals"}</span>
-                </div>
-                <div class="text-gray-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.156]</span>
-                  <span class="bg-gray-700 px-2 py-0.5 rounded text-xs text-gray-300">DEBUG</span>
-                  <span class="text-gray-300">🔗 Webhook URL validated successfully</span>
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 min-w-[80px] justify-center">
+                    DEBUG
+                  </span>
+                  <span class="text-gray-700 flex-1">
+                    [2024-08-26 23:15:01.156] Webhook URL validated: https://your_domain.bitrix24.com/rest/1/xxxx/
+                  </span>
                 </div>
                 
-                <!-- Execution Phase -->
-                <div class="text-gray-400 bg-gray-800 px-2 py-1 rounded text-xs mb-2 mt-3">
-                  ⚡ EXECUTION PHASE
+                <!-- INFO logs -->
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 min-w-[80px] justify-center">
+                    INFO
+                  </span>
+                  <span class="text-blue-700 flex-1">
+                    [2024-08-26 23:15:01.234] 🚀 Bitrix24 activity started: executeBitrix24Activity
+                  </span>
                 </div>
                 
-                <div class="text-white ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.234]</span>
-                  <span class="bg-blue-600 px-2 py-0.5 rounded text-xs text-white font-bold">INFO</span>
-                  <span class="text-white">🎯 Starting: executeBitrix24Activity</span>
-                </div>
-                <div class="text-white ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.267]</span>
-                  <span class="bg-blue-600 px-2 py-0.5 rounded text-xs text-white font-bold">INFO</span>
-                  <span class="text-white">🔌 B24Hook connection established</span>
-                </div>
-                <div class="text-white ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.289]</span>
-                  <span class="bg-blue-600 px-2 py-0.5 rounded text-xs text-white font-bold">INFO</span>
-                  <span class="text-white">🔄 Processing operation: get_deals</span>
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 min-w-[80px] justify-center">
+                    INFO
+                  </span>
+                  <span class="text-blue-700 flex-1">
+                    [2024-08-26 23:15:01.267] B24Hook initialized successfully
+                  </span>
                 </div>
                 
-                <!-- API Communication -->
-                <div class="text-gray-400 bg-gray-800 px-2 py-1 rounded text-xs mb-2 mt-3">
-                  📡 API COMMUNICATION
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 min-w-[80px] justify-center">
+                    INFO
+                  </span>
+                  <span class="text-blue-700 flex-1">
+                    [2024-08-26 23:15:01.289] Executing operation: get_deals
+                  </span>
                 </div>
                 
-                <div class="text-white ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.445]</span>
-                  <span class="bg-blue-600 px-2 py-0.5 rounded text-xs text-white font-bold">INFO</span>
-                  <span class="text-white">📤 API Request: crm.deal.list → {"filter": {"STAGE_ID": "NEW"}}</span>
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 min-w-[80px] justify-center">
+                    INFO
+                  </span>
+                  <span class="text-blue-700 flex-1">
+                    [2024-08-26 23:15:01.445] API call: crm.deal.list with filters {"STAGE_ID": "NEW"}
+                  </span>
                 </div>
                 
-                <div class="text-yellow-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.567]</span>
-                  <span class="bg-yellow-600 px-2 py-0.5 rounded text-xs text-black font-bold">WARN</span>
-                  <span class="text-yellow-400">⚠️ Large dataset detected: 847 records (consider pagination)</span>
-                </div>
-                <div class="text-yellow-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.578]</span>
-                  <span class="bg-yellow-600 px-2 py-0.5 rounded text-xs text-black font-bold">WARN</span>
-                  <span class="text-yellow-400">⚠️ Missing OPPORTUNITY field in 12 records</span>
-                </div>
-                
-                <!-- Processing Phase -->
-                <div class="text-gray-400 bg-gray-800 px-2 py-1 rounded text-xs mb-2 mt-3">
-                  🔧 DATA PROCESSING
+                <!-- WARNING logs -->
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800 min-w-[80px] justify-center">
+                    WARN
+                  </span>
+                  <span class="text-yellow-600 flex-1">
+                    [2024-08-26 23:15:01.567] ⚠️ Large result set detected: 847 deals found, consider pagination
+                  </span>
                 </div>
                 
-                <div class="text-green-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.678]</span>
-                  <span class="bg-green-600 px-2 py-0.5 rounded text-xs text-black font-bold">SUCCESS</span>
-                  <span class="text-green-400">✅ Data retrieved: 847 deals processed</span>
-                </div>
-                <div class="text-green-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.689]</span>
-                  <span class="bg-green-600 px-2 py-0.5 rounded text-xs text-black font-bold">SUCCESS</span>
-                  <span class="text-green-400">✅ Data transformation completed</span>
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800 min-w-[80px] justify-center">
+                    WARN
+                  </span>
+                  <span class="text-yellow-600 flex-1">
+                    [2024-08-26 23:15:01.578] ⚠️ Some deals missing OPPORTUNITY field
+                  </span>
                 </div>
                 
-                <!-- Error Handling -->
-                <div class="text-red-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.702]</span>
-                  <span class="bg-red-600 px-2 py-0.5 rounded text-xs text-white font-bold">ERROR</span>
-                  <span class="text-red-400">❌ Record ID:12345 - Invalid STAGE_ID format (skipped)</span>
+                <!-- INFO success logs -->
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 min-w-[80px] justify-center">
+                    INFO
+                  </span>
+                  <span class="text-green-700 flex-1">
+                    [2024-08-26 23:15:01.678] ✅ Сделки успешно получены: 847 записей
+                  </span>
                 </div>
                 
-                <!-- Completion Phase -->
-                <div class="text-gray-400 bg-gray-800 px-2 py-1 rounded text-xs mb-2 mt-3">
-                  🏁 COMPLETION PHASE
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 min-w-[80px] justify-center">
+                    INFO
+                  </span>
+                  <span class="text-green-700 flex-1">
+                    [2024-08-26 23:15:01.689] ✅ Data transformation completed
+                  </span>
                 </div>
                 
-                <div class="text-green-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.734]</span>
-                  <span class="bg-green-600 px-2 py-0.5 rounded text-xs text-black font-bold">SUCCESS</span>
-                  <span class="text-green-400">🎉 Activity completed successfully</span>
+                <!-- ERROR log -->
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800 min-w-[80px] justify-center">
+                    ERROR
+                  </span>
+                  <span class="text-red-700 flex-1">
+                    [2024-08-26 23:15:01.702] ❌ Deal ID 12345: Invalid STAGE_ID format, skipping
+                  </span>
                 </div>
                 
-                <!-- Output Generation -->
-                <div class="text-white border-t border-gray-700 pt-2 mt-3">
-                  <div class="text-blue-400 font-semibold mb-2">📤 OUTPUT FIELDS GENERATED</div>
+                <!-- FATAL log -->
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 min-w-[80px] justify-center">
+                    FATAL
+                  </span>
+                  <span class="text-black flex-1">
+                    [2024-08-26 23:15:01.710] 💀 Critical: Database connection lost, retrying...
+                  </span>
                 </div>
                 
-                <div class="text-green-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.745]</span>
-                  <span class="bg-green-600 px-2 py-0.5 rounded text-xs text-black font-bold">OUTPUT</span>
-                  <span class="text-green-400">field_output_1 = "success"</span>
-                </div>
-                <div class="text-green-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.746]</span>
-                  <span class="bg-green-600 px-2 py-0.5 rounded text-xs text-black font-bold">OUTPUT</span>
-                  <span class="text-green-400">field_output_2 = "completed"</span>
-                </div>
-                <div class="text-green-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.747]</span>
-                  <span class="bg-green-600 px-2 py-0.5 rounded text-xs text-black font-bold">OUTPUT</span>
-                  <span class="text-green-400">deals_count = 847</span>
-                </div>
-                
-                <!-- Performance Metrics -->
-                <div class="text-white border-t border-gray-700 pt-2 mt-3">
-                  <div class="text-purple-400 font-semibold mb-2">⚡ PERFORMANCE METRICS</div>
-                </div>
-                
-                <div class="text-purple-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.750]</span>
-                  <span class="bg-purple-600 px-2 py-0.5 rounded text-xs text-white font-bold">PERF</span>
-                  <span class="text-purple-400">🕐 Total execution time: 611ms</span>
-                </div>
-                <div class="text-purple-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.751]</span>
-                  <span class="bg-purple-600 px-2 py-0.5 rounded text-xs text-white font-bold">PERF</span>
-                  <span class="text-purple-400">📡 API response time: 423ms</span>
-                </div>
-                <div class="text-purple-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.752]</span>
-                  <span class="bg-purple-600 px-2 py-0.5 rounded text-xs text-white font-bold">PERF</span>
-                  <span class="text-purple-400">🔄 Processing time: 67ms</span>
-                </div>
-                <div class="text-purple-400 ml-4">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.753]</span>
-                  <span class="bg-purple-600 px-2 py-0.5 rounded text-xs text-white font-bold">PERF</span>
-                  <span class="text-purple-400">💾 Memory usage: 12.4MB</span>
-                </div>
-                
-                <!-- Session End -->
-                <div class="text-cyan-400 border-t border-gray-700 pt-2 mt-3">
-                  <span class="text-blue-400">[2024-08-26 23:15:01.760]</span>
-                  <span class="bg-cyan-600 px-2 py-0.5 rounded text-xs text-black font-bold">SESSION</span>
-                  <span class="text-cyan-400">🏁 Session completed - Duration: 760ms</span>
-                </div>
-                
-                <!-- Fatal Error Example (commented) -->
-                <div class="text-gray-600 mt-4 border-t border-gray-800 pt-2">
-                  <div class="text-gray-500 text-xs">// Пример критических ошибок (при фатальных сбоях):</div>
-                  <div class="text-gray-600 ml-4">
-                    <span class="text-gray-500"># [TIMESTAMP] [FATAL] 💀 Authentication failed - Invalid webhook token</span>
-                  </div>
-                  <div class="text-gray-600 ml-4">
-                    <span class="text-gray-500"># [TIMESTAMP] [FATAL] 💀 Critical system error - Activity terminated</span>
-                  </div>
+                <!-- Final INFO log -->
+                <div class="flex gap-4 items-start">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 min-w-[80px] justify-center">
+                    INFO
+                  </span>
+                  <span class="text-green-700 flex-1">
+                    [2024-08-26 23:15:01.734] 🎉 Activity completed successfully in 611ms
+                  </span>
                 </div>
               </div>
             </div>
-          </div>
-          
-          <!-- Test Actions -->
-          <div class="flex gap-3">
-            <B24Button
-              color="primary"
-              @click="executeTest"
-              class="flex items-center gap-2"
-            >
-              <span>▶</span>
-              Выполнить тест
-            </B24Button>
-            
-            <B24Button
-              variant="outline"
-              @click="clearLogs"
-              class="flex items-center gap-2"
-            >
-              <span>🗑️</span>
-              Очистить логи
-            </B24Button>
-            
-            <B24Button
-              variant="outline"
-              @click="downloadLogs"
-              class="flex items-center gap-2"
-            >
-              <span>📥</span>
-              Скачать логи
-            </B24Button>
           </div>
         </div>
       </div>
@@ -673,6 +619,160 @@ const outputFieldCounter = ref(1)
 const testInputParams = ref('')
 const testCode = ref('')
 const testResult = ref('')
+
+// Activity Logs management
+interface ActivityLog {
+  id: string
+  timestamp: string
+  level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL' | 'PERF'
+  message: string
+  emoji?: string
+}
+
+const activityLogs = ref<ActivityLog[]>([
+  {
+    id: '1',
+    timestamp: '2024-08-26 23:15:01.123',
+    level: 'DEBUG',
+    message: 'Activity initialization started'
+  },
+  {
+    id: '2',
+    timestamp: '2024-08-26 23:15:01.145',
+    level: 'DEBUG',
+    message: 'Input parameters received: {"userId": 123, "operation": "get_deals"}'
+  },
+  {
+    id: '3',
+    timestamp: '2024-08-26 23:15:01.156',
+    level: 'DEBUG',
+    message: 'Webhook URL validated: https://your_domain.bitrix24.com/rest/1/xxxx/'
+  },
+  {
+    id: '4',
+    timestamp: '2024-08-26 23:15:01.234',
+    level: 'INFO',
+    message: 'Bitrix24 activity started: executeBitrix24Activity',
+    emoji: '🚀'
+  },
+  {
+    id: '5',
+    timestamp: '2024-08-26 23:15:01.267',
+    level: 'INFO',
+    message: 'B24Hook initialized successfully'
+  },
+  {
+    id: '6',
+    timestamp: '2024-08-26 23:15:01.289',
+    level: 'INFO',
+    message: 'Executing operation: get_deals'
+  },
+  {
+    id: '7',
+    timestamp: '2024-08-26 23:15:01.445',
+    level: 'INFO',
+    message: 'API call: crm.deal.list with filters {"STAGE_ID": "NEW"}'
+  },
+  {
+    id: '8',
+    timestamp: '2024-08-26 23:15:01.567',
+    level: 'WARN',
+    message: 'Large result set detected: 847 deals found, consider pagination',
+    emoji: '⚠️'
+  },
+  {
+    id: '9',
+    timestamp: '2024-08-26 23:15:01.578',
+    level: 'WARN',
+    message: 'Some deals missing OPPORTUNITY field',
+    emoji: '⚠️'
+  },
+  {
+    id: '10',
+    timestamp: '2024-08-26 23:15:01.678',
+    level: 'INFO',
+    message: 'Сделки успешно получены: 847 записей',
+    emoji: '✅'
+  },
+  {
+    id: '11',
+    timestamp: '2024-08-26 23:15:01.689',
+    level: 'INFO',
+    message: 'Data transformation completed',
+    emoji: '✅'
+  },
+  {
+    id: '12',
+    timestamp: '2024-08-26 23:15:01.702',
+    level: 'ERROR',
+    message: 'Deal ID 12345: Invalid STAGE_ID format, skipping',
+    emoji: '❌'
+  },
+  {
+    id: '13',
+    timestamp: '2024-08-26 23:15:01.710',
+    level: 'FATAL',
+    message: 'Critical: Database connection lost, retrying...',
+    emoji: '💀'
+  },
+  {
+    id: '14',
+    timestamp: '2024-08-26 23:15:01.734',
+    level: 'INFO',
+    message: 'Activity completed successfully in 611ms',
+    emoji: '🎉'
+  },
+  {
+    id: '15',
+    timestamp: '2024-08-26 23:15:01.745',
+    level: 'PERF',
+    message: 'API Response Time: 234ms | Data Processing: 377ms | Memory Usage: 45.2MB',
+    emoji: '📊'
+  }
+])
+
+// Log statistics computed properties
+const logStats = computed(() => {
+  const stats = {
+    DEBUG: 0,
+    INFO: 0,
+    WARN: 0,
+    ERROR: 0,
+    FATAL: 0,
+    PERF: 0
+  }
+  
+  activityLogs.value.forEach(log => {
+    stats[log.level]++
+  })
+  
+  return stats
+})
+
+// Log level styling
+const getLogLevelClass = (level: ActivityLog['level']) => {
+  const classes = {
+    DEBUG: 'bg-purple-100 text-purple-800',
+    INFO: 'bg-blue-100 text-blue-800',
+    WARN: 'bg-yellow-100 text-yellow-800',
+    ERROR: 'bg-red-100 text-red-800',
+    FATAL: 'bg-gray-100 text-gray-800',
+    PERF: 'bg-cyan-100 text-cyan-800'
+  }
+  return classes[level]
+}
+
+const getLogTextClass = (level: ActivityLog['level']) => {
+  const classes = {
+    DEBUG: 'text-gray-700',
+    INFO: 'text-blue-700',
+    WARN: 'text-yellow-600',
+    ERROR: 'text-red-700',
+    FATAL: 'text-black',
+    PERF: 'text-cyan-700'
+  }
+  return classes[level]
+}
 
 // Save management
 const isSaving = ref(false)
@@ -1251,27 +1351,60 @@ const removeOutputField = (index: number) => {
 }
 
 // Request Testing functions
-const executeTest = () => {
+const executeTest = async () => {
   try {
-    // The logs are now displayed statically in the UI
-    // This function would trigger actual execution in a real implementation
-    const timestamp = new Date().toISOString()
+    // Clear previous logs
+    activityLogs.value = []
     
+    // Add initial logs
+    addLog('DEBUG', 'Test execution initiated')
+    addLog('INFO', '🚀 Starting activity test run', '🚀')
+    
+    const timestamp = new Date().toISOString()
     console.log('Test execution started:', timestamp)
+    
+    // Simulate processing with logs
+    await new Promise(resolve => setTimeout(resolve, 500))
+    addLog('DEBUG', `Input fields validation: ${inputFields.value.length} fields found`)
+    addLog('DEBUG', `Output fields configuration: ${outputFields.value.length} fields expected`)
+    
+    await new Promise(resolve => setTimeout(resolve, 300))
+    addLog('INFO', 'Bitrix24 SDK initialization...')
+    
+    await new Promise(resolve => setTimeout(resolve, 200))
+    addLog('INFO', 'Webhook URL validated successfully')
+    
+    await new Promise(resolve => setTimeout(resolve, 400))
+    addLog('INFO', 'Executing activity code...')
+    
+    // Simulate some warnings
+    await new Promise(resolve => setTimeout(resolve, 600))
+    addLog('WARN', 'Large dataset detected, performance may be affected', '⚠️')
+    
+    await new Promise(resolve => setTimeout(resolve, 300))
+    addLog('INFO', 'Processing CRM data...')
+    
+    // Simulate error handling
+    await new Promise(resolve => setTimeout(resolve, 200))
+    addLog('ERROR', 'Minor validation error in record #42, skipping', '❌')
+    
+    await new Promise(resolve => setTimeout(resolve, 500))
+    addLog('INFO', 'Data transformation completed successfully', '✅')
+    
+    // Performance metrics
+    await new Promise(resolve => setTimeout(resolve, 100))
+    addLog('PERF', 'Execution time: 2.1s | Memory usage: 67.3MB | API calls: 15', '📊')
+    
+    addLog('INFO', 'Test execution completed successfully', '🎉')
+    
     console.log('Input fields:', inputFields.value)
     console.log('Output fields:', outputFields.value)
     console.log('Code to execute:', testCode.value)
-    
-    // In a real implementation, this would:
-    // 1. Execute the activity code
-    // 2. Capture real logs
-    // 3. Update the output fields with actual results
-    // 4. Display real-time logs in the logging area
-    
     console.log('Test execution completed - see comprehensive logs above')
     
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка'
+    addLog('FATAL', `Critical error during test execution: ${errorMessage}`, '💀')
     console.error('Ошибка выполнения теста:', errorMessage)
   }
 }
@@ -1287,30 +1420,36 @@ const clearTestData = () => {
 // New functions for log management
 const clearLogs = () => {
   console.log('Clearing activity logs...')
-  // Here you would clear the logs display
-  // For now, just log the action
+  activityLogs.value = []
 }
 
 const downloadLogs = () => {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const logContent = `
-[2024-08-26 23:15:01.123] [DEBUG] Activity initialization started
-[2024-08-26 23:15:01.145] [DEBUG] Input parameters received: {"userId": 123, "operation": "get_deals"}
-[2024-08-26 23:15:01.156] [DEBUG] Webhook URL validated: https://your_domain.bitrix24.com/rest/1/xxxx/
-[2024-08-26 23:15:01.234] [INFO] 🚀 Bitrix24 activity started: executeBitrix24Activity
-[2024-08-26 23:15:01.267] [INFO] B24Hook initialized successfully
-[2024-08-26 23:15:01.289] [INFO] Executing operation: get_deals
-[2024-08-26 23:15:01.445] [INFO] API call: crm.deal.list with filters {"STAGE_ID": "NEW"}
-[2024-08-26 23:15:01.567] [WARN] ⚠️ Large result set detected: 847 deals found, consider pagination
-[2024-08-26 23:15:01.578] [WARN] ⚠️ Some deals missing OPPORTUNITY field
-[2024-08-26 23:15:01.678] [INFO] ✅ Сделки успешно получены: 847 записей
-[2024-08-26 23:15:01.689] [INFO] ✅ Data transformation completed
-[2024-08-26 23:15:01.702] [ERROR] ❌ Deal ID 12345: Invalid STAGE_ID format, skipping
-[2024-08-26 23:15:01.734] [INFO] 🎉 Activity completed successfully in 611ms
-`
+  
+  // Generate log content from current logs
+  let logContent = ''
+  activityLogs.value.forEach(log => {
+    const emoji = log.emoji ? `${log.emoji} ` : ''
+    logContent += `[${log.timestamp}] [${log.level}] ${emoji}${log.message}\n`
+  })
+  
+  // Add performance summary
+  const totalLogs = activityLogs.value.length
+  const errorCount = logStats.value.ERROR + logStats.value.FATAL
+  const warningCount = logStats.value.WARN
+  
+  logContent += `\n--- Статистика логов ---\n`
+  logContent += `Общее количество: ${totalLogs}\n`
+  logContent += `DEBUG: ${logStats.value.DEBUG}\n`
+  logContent += `INFO: ${logStats.value.INFO}\n`
+  logContent += `WARN: ${logStats.value.WARN}\n`
+  logContent += `ERROR: ${logStats.value.ERROR}\n`
+  logContent += `FATAL: ${logStats.value.FATAL}\n`
+  logContent += `PERFORMANCE: ${logStats.value.PERF}\n`
+  logContent += `\nОшибки/Предупреждения: ${errorCount + warningCount}\n`
   
   // Create and download file
-  const blob = new Blob([logContent], { type: 'text/plain' })
+  const blob = new Blob([logContent], { type: 'text/plain;charset=utf-8' })
   const url = window.URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -1321,6 +1460,24 @@ const downloadLogs = () => {
   window.URL.revokeObjectURL(url)
   
   console.log('Downloaded activity logs:', `activity-logs-${timestamp}.txt`)
+}
+
+// Add log function for real-time logging
+const addLog = (level: ActivityLog['level'], message: string, emoji?: string) => {
+  const newLog: ActivityLog = {
+    id: Date.now().toString(),
+    timestamp: new Date().toISOString().replace('T', ' ').substr(0, 23),
+    level,
+    message,
+    emoji
+  }
+  
+  activityLogs.value.push(newLog)
+  
+  // Auto-scroll to bottom (if implemented in UI)
+  nextTick(() => {
+    // You could add auto-scrolling logic here
+  })
 }
 
 const startEditingTitle = () => {
