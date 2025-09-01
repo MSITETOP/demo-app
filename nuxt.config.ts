@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   
   // Configure for GitHub Pages deployment
   app: {
-    baseURL: process.env.NODE_ENV === 'production' ? '/demo-app/' : '/'
+    baseURL: process.env.NUXT_APP_BASE_URL || (process.env.NODE_ENV === 'production' ? '/demo-app/' : '/')
   },
   /**
    * @memo App work under frame
@@ -41,7 +41,6 @@ export default defineNuxtConfig({
   
   // Configure for static deployment
   ssr: false,
-  target: 'static',
 
   vite: {
     server: {
