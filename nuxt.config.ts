@@ -2,6 +2,13 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  // Set the source directory to 'app'
+  srcDir: 'app/',
+  
+  // Configure for GitHub Pages deployment
+  app: {
+    baseURL: process.env.NODE_ENV === 'production' ? '/demo-app/' : '/'
+  },
   /**
    * @memo App work under frame
    * Nuxt DevTools: Failed to check parent window
@@ -25,7 +32,16 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  //ssr: false,
+  // Enable static site generation for GitHub Pages
+  nitro: {
+    prerender: {
+      routes: ['/sitemap.xml']
+    }
+  },
+  
+  // Configure for static deployment
+  ssr: false,
+  target: 'static',
 
   vite: {
     server: {
