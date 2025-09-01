@@ -180,7 +180,7 @@
             </div>
             
             <!-- Column 3: Multiple Field Checkbox -->
-            <div class="col-span-1 flex items-center">
+            <div class="col-span-1 flex items-center" style="line-height: 2.5rem; margin-top: 1.75rem;">
               <label class="flex items-center gap-2 cursor-pointer">
                 <input
                   v-model="field.isMultiple"
@@ -192,7 +192,7 @@
             </div>
             
             <!-- Column 4: Delete Button -->
-            <div class="col-span-1 flex justify-end">
+            <div class="col-span-1 flex justify-end" style="line-height: 2.5rem; margin-top: 1.75rem;">
               <B24Button
                 color="danger"
                 variant="outline"
@@ -287,7 +287,7 @@
                   }
                 }"
                 class="border border-gray-300 rounded-md"
-                style="height: 400px;"
+                style="height: 800px;"
               />
               <template #fallback>
                 <div class="w-full h-96 border border-gray-300 rounded-md bg-gray-50 flex items-center justify-center">
