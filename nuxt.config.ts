@@ -7,8 +7,9 @@ export default defineNuxtConfig({
   
   // Configure for GitHub Pages deployment
   app: {
-    baseURL: process.env.NUXT_APP_BASE_URL || (process.env.NODE_ENV === 'production' ? '/demo-app/' : '/')
+    baseURL:  '/ui/'
   },
+
   /**
    * @memo App work under frame
    * Nuxt DevTools: Failed to check parent window
