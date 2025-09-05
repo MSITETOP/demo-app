@@ -309,10 +309,12 @@
           <B24Button
             color="primary"
             @click="executeTest"
+            :disabled="isTestRunning"
             class="flex items-center gap-2"
           >
-            <span>▶</span>
-            Выполнить тест
+            <span v-if="!isTestRunning">▶</span>
+            <span v-else class="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+            {{ isTestRunning ? 'Выполняется...' : 'Выполнить тест' }}
           </B24Button>
         </div>
         
@@ -320,80 +322,33 @@
           <!-- Output Fields Results -->
           <div class="w-full">
             <div class="bg-gray-50 border border-gray-300 rounded-md p-4">
-              <div class="space-y-3">
-                <div class="flex items-center justify-between p-3 bg-white rounded border">
+              <div v-if="Object.keys(outputResults).length === 0" class="text-center py-8 text-gray-500">
+                <p>Результаты появятся после выполнения теста</p>
+                <p class="text-sm">Нажмите "Выполнить тест" для получения результатов</p>
+              </div>
+              
+              <div v-else class="space-y-3">
+                <div 
+                  v-for="(value, key) in outputResults" 
+                  :key="key"
+                  class="flex items-center justify-between p-3 bg-white rounded border"
+                >
                   <div class="flex-1">
-                    <div class="font-medium text-gray-900">field_output_1</div>
-                    <div class="text-sm text-gray-600">Результат обработки</div>
+                    <div class="font-bold text-gray-900">
+                      {{ getOutputFieldDescription(key) }}
+                    </div>
+                    <div class="text-sm text-gray-600">{{ key }}</div>
+                    <div v-if="getOutputFieldMultiple(key)" class="text-xs text-blue-600">
+                      ✓ Множественное поле
+                    </div>
                   </div>
                   <div class="flex-1 px-4">
-                    <div class="text-green-600 font-mono bg-green-50 px-2 py-1 rounded text-sm">
-                      "success"
+                    <div :class="getValueDisplayClass(value)" class="font-mono px-2 py-1 rounded text-sm">
+                      {{ formatDisplayValue(value) }}
                     </div>
                   </div>
                   <div class="text-xs text-gray-500">
-                    String
-                  </div>
-                </div>
-                
-                <div class="flex items-center justify-between p-3 bg-white rounded border">
-                  <div class="flex-1">
-                    <div class="font-medium text-gray-900">field_output_2</div>
-                    <div class="text-sm text-gray-600">Статус выполнения</div>
-                  </div>
-                  <div class="flex-1 px-4">
-                    <div class="text-blue-600 font-mono bg-blue-50 px-2 py-1 rounded text-sm">
-                      "completed"
-                    </div>
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    String
-                  </div>
-                </div>
-                
-                <div class="flex items-center justify-between p-3 bg-white rounded border">
-                  <div class="flex-1">
-                    <div class="font-medium text-gray-900">deals_count</div>
-                    <div class="text-sm text-gray-600">Количество сделок (автогенерация)</div>
-                  </div>
-                  <div class="flex-1 px-4">
-                    <div class="text-purple-600 font-mono bg-purple-50 px-2 py-1 rounded text-sm">
-                      847
-                    </div>
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    Number
-                  </div>
-                </div>
-                
-                <div class="flex items-center justify-between p-3 bg-white rounded border">
-                  <div class="flex-1">
-                    <div class="font-medium text-gray-900">execution_time</div>
-                    <div class="text-sm text-gray-600">Время выполнения (автогенерация)</div>
-                  </div>
-                  <div class="flex-1 px-4">
-                    <div class="text-orange-600 font-mono bg-orange-50 px-2 py-1 rounded text-sm">
-                      "611ms"
-                    </div>
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    String
-                  </div>
-                </div>
-                
-                <div class="flex items-center justify-between p-3 bg-white rounded border">
-                  <div class="flex-1">
-                    <div class="font-medium text-gray-900">api_response</div>
-                    <div class="text-sm text-gray-600">Ответ API (множественное)</div>
-                    <div class="text-xs text-blue-600">✓ Множественное поле</div>
-                  </div>
-                  <div class="flex-1 px-4">
-                    <div class="text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded text-sm">
-                      [{"ID": "1234", "TITLE": "Deal 1"}, ...] (847 items)
-                    </div>
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    Array
+                    {{ getValueType(value) }}
                   </div>
                 </div>
               </div>
@@ -403,144 +358,156 @@
           <!-- Activity Execution Logs -->
           <div class="w-full">
             <div class="flex justify-between items-center mb-6">
-              <h3 class="text-lg font-semibold text-gray-800">Логи</h3>
+              <h3 class="text-lg font-semibold text-gray-800">
+                Логи
+                <span v-if="activeLogFilters.size > 0" class="text-sm font-normal text-gray-500 ml-2">
+                  (показано {{ filteredLogs.length }} из {{ activityLogs.length }})
+                </span>
+              </h3>
+              <div class="flex gap-2">
+                <B24Button
+                  variant="outline"
+                  size="sm"
+                  @click="clearLogs"
+                  class="flex items-center gap-2"
+                  title="Очистить логи"
+                >
+                  <span>🗑️</span>
+                  Очистить
+                </B24Button>
+                <B24Button
+                  v-if="activeLogFilters.size > 0"
+                  variant="outline"
+                  size="sm"
+                  @click="clearLogFilters"
+                  class="flex items-center gap-2"
+                  title="Сбросить фильтры"
+                >
+                  <span>🔄</span>
+                  Показать все
+                </B24Button>
+                <B24Button
+                  variant="outline"
+                  size="sm"
+                  @click="downloadLogs"
+                  :disabled="activityLogs.length === 0"
+                  class="flex items-center gap-2"
+                  title="Скачать логи"
+                >
+                  <span>📥</span>
+                  Скачать
+                </B24Button>
+              </div>
+            </div>
+            
+            <!-- Log Statistics (if logs exist) -->
+            <div v-if="activityLogs.length > 0" class="grid grid-cols-6 gap-4 mb-4">
+              <button 
+                @click="toggleLogFilter('DEBUG')"
+                :class="[
+                  'p-3 rounded text-center transition-all duration-200 border-2',
+                  activeLogFilters.has('DEBUG') 
+                    ? 'bg-blue-100 border-blue-500 shadow-md' 
+                    : 'bg-gray-50 border-transparent hover:bg-blue-50 hover:border-blue-200'
+                ]"
+              >
+                <div class="text-2xl font-bold text-blue-600">{{ logStats.DEBUG }}</div>
+                <div class="text-xs text-blue-600">DEBUG</div>
+              </button>
+              <button 
+                @click="toggleLogFilter('INFO')"
+                :class="[
+                  'p-3 rounded text-center transition-all duration-200 border-2',
+                  activeLogFilters.has('INFO') 
+                    ? 'bg-green-100 border-green-500 shadow-md' 
+                    : 'bg-gray-50 border-transparent hover:bg-green-50 hover:border-green-200'
+                ]"
+              >
+                <div class="text-2xl font-bold text-green-600">{{ logStats.INFO }}</div>
+                <div class="text-xs text-green-600">INFO</div>
+              </button>
+              <button 
+                @click="toggleLogFilter('WARN')"
+                :class="[
+                  'p-3 rounded text-center transition-all duration-200 border-2',
+                  activeLogFilters.has('WARN') 
+                    ? 'bg-orange-100 border-orange-400 shadow-md' 
+                    : 'bg-gray-50 border-transparent hover:bg-orange-50 hover:border-orange-200'
+                ]"
+              >
+                <div class="text-2xl font-bold text-orange-400">{{ logStats.WARN }}</div>
+                <div class="text-xs text-orange-400">WARN</div>
+              </button>
+              <button 
+                @click="toggleLogFilter('ERROR')"
+                :class="[
+                  'p-3 rounded text-center transition-all duration-200 border-2',
+                  activeLogFilters.has('ERROR') 
+                    ? 'bg-red-100 border-red-500 shadow-md' 
+                    : 'bg-gray-50 border-transparent hover:bg-red-50 hover:border-red-200'
+                ]"
+              >
+                <div class="text-2xl font-bold text-red-600">{{ logStats.ERROR }}</div>
+                <div class="text-xs text-red-600">ERROR</div>
+              </button>
+              <button 
+                @click="toggleLogFilter('FATAL')"
+                :class="[
+                  'p-3 rounded text-center transition-all duration-200 border-2',
+                  activeLogFilters.has('FATAL') 
+                    ? 'bg-gray-200 border-black shadow-md' 
+                    : 'bg-gray-50 border-transparent hover:bg-gray-100 hover:border-gray-300'
+                ]"
+              >
+                <div class="text-2xl font-bold text-black">{{ logStats.FATAL }}</div>
+                <div class="text-xs text-black">FATAL</div>
+              </button>
+              <button 
+                @click="toggleLogFilter('PERF')"
+                :class="[
+                  'p-3 rounded text-center transition-all duration-200 border-2',
+                  activeLogFilters.has('PERF') 
+                    ? 'bg-cyan-100 border-cyan-500 shadow-md' 
+                    : 'bg-gray-50 border-transparent hover:bg-cyan-50 hover:border-cyan-200'
+                ]"
+              >
+                <div class="text-2xl font-bold text-cyan-600">{{ logStats.PERF }}</div>
+                <div class="text-xs text-cyan-600">PERF</div>
+              </button>
             </div>
             
             <!-- Terminal-style log container -->
             <div class="bg-gray-50 rounded-lg border border-gray-300 h-80 overflow-y-auto font-mono text-sm">
-              <div class="p-4 space-y-2">
-                <!-- DEBUG logs -->
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 min-w-[80px] justify-center">
-                    DEBUG
-                  </span>
-                  <span class="text-gray-700 flex-1">
-                    [2024-08-26 23:15:01.123] Activity initialization started
-                  </span>
-                </div>
-                
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 min-w-[80px] justify-center">
-                    DEBUG
-                  </span>
-                  <span class="text-gray-700 flex-1">
-                    [2024-08-26 23:15:01.145] Input parameters received: {"userId": 123, "operation": "get_deals"}
-                  </span>
-                </div>
-                
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 min-w-[80px] justify-center">
-                    DEBUG
-                  </span>
-                  <span class="text-gray-700 flex-1">
-                    [2024-08-26 23:15:01.156] Webhook URL validated: https://your_domain.bitrix24.com/rest/1/xxxx/
-                  </span>
-                </div>
-                
-                <!-- INFO logs -->
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 min-w-[80px] justify-center">
-                    INFO
-                  </span>
-                  <span class="text-blue-700 flex-1">
-                    [2024-08-26 23:15:01.234] 🚀 Bitrix24 activity started: executeBitrix24Activity
-                  </span>
-                </div>
-                
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 min-w-[80px] justify-center">
-                    INFO
-                  </span>
-                  <span class="text-blue-700 flex-1">
-                    [2024-08-26 23:15:01.267] B24Hook initialized successfully
-                  </span>
-                </div>
-                
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 min-w-[80px] justify-center">
-                    INFO
-                  </span>
-                  <span class="text-blue-700 flex-1">
-                    [2024-08-26 23:15:01.289] Executing operation: get_deals
-                  </span>
-                </div>
-                
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 min-w-[80px] justify-center">
-                    INFO
-                  </span>
-                  <span class="text-blue-700 flex-1">
-                    [2024-08-26 23:15:01.445] API call: crm.deal.list with filters {"STAGE_ID": "NEW"}
-                  </span>
-                </div>
-                
-                <!-- WARNING logs -->
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800 min-w-[80px] justify-center">
-                    WARN
-                  </span>
-                  <span class="text-yellow-600 flex-1">
-                    [2024-08-26 23:15:01.567] ⚠️ Large result set detected: 847 deals found, consider pagination
-                  </span>
-                </div>
-                
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800 min-w-[80px] justify-center">
-                    WARN
-                  </span>
-                  <span class="text-yellow-600 flex-1">
-                    [2024-08-26 23:15:01.578] ⚠️ Some deals missing OPPORTUNITY field
-                  </span>
-                </div>
-                
-                <!-- INFO success logs -->
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 min-w-[80px] justify-center">
-                    INFO
-                  </span>
-                  <span class="text-green-700 flex-1">
-                    [2024-08-26 23:15:01.678] ✅ Сделки успешно получены: 847 записей
-                  </span>
-                </div>
-                
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 min-w-[80px] justify-center">
-                    INFO
-                  </span>
-                  <span class="text-green-700 flex-1">
-                    [2024-08-26 23:15:01.689] ✅ Data transformation completed
-                  </span>
-                </div>
-                
-                <!-- ERROR log -->
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800 min-w-[80px] justify-center">
-                    ERROR
-                  </span>
-                  <span class="text-red-700 flex-1">
-                    [2024-08-26 23:15:01.702] ❌ Deal ID 12345: Invalid STAGE_ID format, skipping
-                  </span>
-                </div>
-                
-                <!-- FATAL log -->
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 min-w-[80px] justify-center">
-                    FATAL
-                  </span>
-                  <span class="text-black flex-1">
-                    [2024-08-26 23:15:01.710] 💀 Critical: Database connection lost, retrying...
-                  </span>
-                </div>
-                
-                <!-- Final INFO log -->
-                <div class="flex gap-4 items-start">
-                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 min-w-[80px] justify-center">
-                    INFO
-                  </span>
-                  <span class="text-green-700 flex-1">
-                    [2024-08-26 23:15:01.734] 🎉 Activity completed successfully in 611ms
-                  </span>
-                </div>
+              <div v-if="activityLogs.length === 0" class="p-4 text-center text-gray-500">
+                <p>Логи появятся здесь после выполнения теста</p>
+              </div>
+              
+              <div v-else-if="filteredLogs.length === 0 && activeLogFilters.size > 0" class="p-4 text-center text-gray-500">
+                <p>Нет логов, соответствующих выбранным фильтрам</p>
+                <p class="text-sm">Используйте кнопку "Показать все" для сброса фильтров</p>
+              </div>
+              
+              <div v-else class="p-4 space-y-2">
+                <TransitionGroup name="log-filter" tag="div" class="space-y-2">
+                  <div 
+                    v-for="log in filteredLogs" 
+                    :key="log.id"
+                    class="flex gap-4 items-start"
+                  >
+                    <span 
+                      :class="getLogLevelClass(log.level)" 
+                      class="inline-flex items-center px-2 py-1 rounded text-xs font-medium min-w-[80px] justify-center"
+                    >
+                      {{ log.level }}
+                    </span>
+                    <span 
+                      :class="getLogTextClass(log.level)" 
+                      class="flex-1"
+                    >
+                      {{ log.emoji ? log.emoji + ' ' : '' }}{{ log.message }}
+                    </span>
+                  </div>
+                </TransitionGroup>
               </div>
             </div>
           </div>
@@ -619,6 +586,8 @@ const outputFieldCounter = ref(1)
 const testInputParams = ref('')
 const testCode = ref('')
 const testResult = ref('')
+const outputResults = ref<{[key: string]: any}>({})
+const isTestRunning = ref(false)
 
 // Activity Logs management
 interface ActivityLog {
@@ -629,107 +598,10 @@ interface ActivityLog {
   emoji?: string
 }
 
-const activityLogs = ref<ActivityLog[]>([
-  {
-    id: '1',
-    timestamp: '2024-08-26 23:15:01.123',
-    level: 'DEBUG',
-    message: 'Activity initialization started'
-  },
-  {
-    id: '2',
-    timestamp: '2024-08-26 23:15:01.145',
-    level: 'DEBUG',
-    message: 'Input parameters received: {"userId": 123, "operation": "get_deals"}'
-  },
-  {
-    id: '3',
-    timestamp: '2024-08-26 23:15:01.156',
-    level: 'DEBUG',
-    message: 'Webhook URL validated: https://your_domain.bitrix24.com/rest/1/xxxx/'
-  },
-  {
-    id: '4',
-    timestamp: '2024-08-26 23:15:01.234',
-    level: 'INFO',
-    message: 'Bitrix24 activity started: executeBitrix24Activity',
-    emoji: '🚀'
-  },
-  {
-    id: '5',
-    timestamp: '2024-08-26 23:15:01.267',
-    level: 'INFO',
-    message: 'B24Hook initialized successfully'
-  },
-  {
-    id: '6',
-    timestamp: '2024-08-26 23:15:01.289',
-    level: 'INFO',
-    message: 'Executing operation: get_deals'
-  },
-  {
-    id: '7',
-    timestamp: '2024-08-26 23:15:01.445',
-    level: 'INFO',
-    message: 'API call: crm.deal.list with filters {"STAGE_ID": "NEW"}'
-  },
-  {
-    id: '8',
-    timestamp: '2024-08-26 23:15:01.567',
-    level: 'WARN',
-    message: 'Large result set detected: 847 deals found, consider pagination',
-    emoji: '⚠️'
-  },
-  {
-    id: '9',
-    timestamp: '2024-08-26 23:15:01.578',
-    level: 'WARN',
-    message: 'Some deals missing OPPORTUNITY field',
-    emoji: '⚠️'
-  },
-  {
-    id: '10',
-    timestamp: '2024-08-26 23:15:01.678',
-    level: 'INFO',
-    message: 'Сделки успешно получены: 847 записей',
-    emoji: '✅'
-  },
-  {
-    id: '11',
-    timestamp: '2024-08-26 23:15:01.689',
-    level: 'INFO',
-    message: 'Data transformation completed',
-    emoji: '✅'
-  },
-  {
-    id: '12',
-    timestamp: '2024-08-26 23:15:01.702',
-    level: 'ERROR',
-    message: 'Deal ID 12345: Invalid STAGE_ID format, skipping',
-    emoji: '❌'
-  },
-  {
-    id: '13',
-    timestamp: '2024-08-26 23:15:01.710',
-    level: 'FATAL',
-    message: 'Critical: Database connection lost, retrying...',
-    emoji: '💀'
-  },
-  {
-    id: '14',
-    timestamp: '2024-08-26 23:15:01.734',
-    level: 'INFO',
-    message: 'Activity completed successfully in 611ms',
-    emoji: '🎉'
-  },
-  {
-    id: '15',
-    timestamp: '2024-08-26 23:15:01.745',
-    level: 'PERF',
-    message: 'API Response Time: 234ms | Data Processing: 377ms | Memory Usage: 45.2MB',
-    emoji: '📊'
-  }
-])
+const activityLogs = ref<ActivityLog[]>([])
+
+// Log filtering
+const activeLogFilters = ref<Set<ActivityLog['level']>>(new Set())
 
 // Log statistics computed properties
 const logStats = computed(() => {
@@ -749,29 +621,33 @@ const logStats = computed(() => {
   return stats
 })
 
+// Filtered logs based on active filters
+const filteredLogs = computed(() => {
+  if (activeLogFilters.value.size === 0) {
+    return activityLogs.value
+  }
+  
+  return activityLogs.value.filter(log => 
+    activeLogFilters.value.has(log.level)
+  )
+})
+
 // Log level styling
 const getLogLevelClass = (level: ActivityLog['level']) => {
   const classes = {
-    DEBUG: 'bg-purple-100 text-purple-800',
-    INFO: 'bg-blue-100 text-blue-800',
-    WARN: 'bg-yellow-100 text-yellow-800',
-    ERROR: 'bg-red-100 text-red-800',
-    FATAL: 'bg-gray-100 text-gray-800',
-    PERF: 'bg-cyan-100 text-cyan-800'
+    DEBUG: 'bg-blue-600 text-white',
+    INFO: 'bg-green-600 text-white',
+    WARN: 'bg-orange-400 text-white',
+    ERROR: 'bg-red-600 text-white',
+    FATAL: 'bg-black text-white',
+    PERF: 'bg-cyan-600 text-white'
   }
   return classes[level]
 }
 
 const getLogTextClass = (level: ActivityLog['level']) => {
-  const classes = {
-    DEBUG: 'text-gray-700',
-    INFO: 'text-blue-700',
-    WARN: 'text-yellow-600',
-    ERROR: 'text-red-700',
-    FATAL: 'text-black',
-    PERF: 'text-cyan-700'
-  }
-  return classes[level]
+  // Все тексты логов черные
+  return 'text-black'
 }
 
 // Save management
@@ -828,203 +704,33 @@ const loadActivityData = () => {
     
     // Initialize with empty test data
     testInputParams.value = ''
-    testCode.value = `// Bitrix24 SDK Integration Example
-// This code demonstrates Bitrix24 API integration with error handling
+    testCode.value = `// Пример активити с использованием params и logger
+logger.info("Активити запущено");
 
-import { B24Hook } from '@bitrix24/b24jssdk';
-import { promises as fs } from 'fs';
-import path from 'path';
+// Получение входящих параметров
+const input1 = params["field_input_1"];
+const input2 = params["field_input_2"];
 
-/**
- * Main Bitrix24 activity function
- * @param {Object} inputData - Input parameters from Bitrix24
- * @returns {Promise<Object>} Activity result
- */
-async function executeBitrix24Activity(inputData: any): Promise<any> {
-  console.log('🚀 Bitrix24 activity started:', inputData);
+logger.debug("Входящие параметры:", { input1, input2 });
+
+// Обработка данных
+try {
+  // Простые вычисления для демонстрации
+  const sum = Number(input1) + Number(input2);
+  const product = Number(input1) * Number(input2);
   
-  // Initialize Bitrix24 Hook
-  const b24 = B24Hook.fromWebhookUrl('https://your_domain.bitrix24.com/rest/1/xxxx/');
+  logger.info("Вычисления выполнены", { sum, product });
   
-  try {
-    // Destructure input parameters
-    const { 
-      operation = 'get_deals', 
-      stageId = 'NEW', 
-      limit = 50,
-      userId 
-    } = inputData;
-    
-    // Validate required parameters
-    if (!userId) {
-      throw new Error('Missing required parameter: userId');
-    }
-    
-    // Process different Bitrix24 operations
-    switch (operation) {
-      case 'get_deals':
-        return await getDeals(b24, stageId, limit);
-      
-      case 'create_deal':
-        return await createDeal(b24, inputData);
-      
-      case 'update_deal':
-        return await updateDeal(b24, inputData);
-      
-      case 'get_contacts':
-        return await getContacts(b24, limit);
-      
-      default:
-        throw new Error(\`Unknown operation: \${operation}\`);
-    }
-    
-  } catch (error: any) {
-    console.error('❌ Bitrix24 activity failed:', error);
-    return {
-      status: 'error',
-      message: error.message,
-      timestamp: new Date().toISOString()
-    };
-  }
-}
-
-/**
- * Get deals from Bitrix24 CRM
- */
-async function getDeals(b24: any, stageId: string, limit: number): Promise<any> {
-  try {
-    const result = await b24.call('crm.deal.list', {
-      order: { DATE_CREATE: 'DESC' },
-      filter: { STAGE_ID: stageId }, // фильтр по стадии
-      select: ['ID', 'TITLE', 'STAGE_ID', 'DATE_CREATE', 'OPPORTUNITY', 'CURRENCY_ID'],
-      start: 0,
-      limit: limit
-    });
-
-    console.log('Сделки:', result);
-    
-    return {
-      status: 'success',
-      message: \`Found \${result.result.length} deals\`,
-      data: {
-        deals: result.result,
-        total: result.total,
-        stageId
-      }
-    };
-    
-  } catch (err: any) {
-    console.error('Ошибка при получении сделок:', err.message);
-    throw new Error(\`Failed to get deals: \${err.message}\`);
-  }
-}
-
-/**
- * Create new deal in Bitrix24 CRM
- */
-async function createDeal(b24: any, inputData: any): Promise<any> {
-  try {
-    const { title, opportunity, contactId, companyId } = inputData;
-    
-    const dealData = {
-      TITLE: title || 'New Deal from Activity',
-      STAGE_ID: 'NEW',
-      OPPORTUNITY: opportunity || 0,
-      CURRENCY_ID: 'RUB',
-      CONTACT_ID: contactId,
-      COMPANY_ID: companyId,
-      ASSIGNED_BY_ID: 1, // ID ответственного
-      SOURCE_ID: 'WEB'
-    };
-    
-    const result = await b24.call('crm.deal.add', {
-      fields: dealData
-    });
-    
-    console.log('Deal created:', result);
-    
-    return {
-      status: 'success',
-      message: 'Deal created successfully',
-      data: {
-        dealId: result.result,
-        dealData
-      }
-    };
-    
-  } catch (err: any) {
-    console.error('Ошибка при создании сделки:', err.message);
-    throw new Error(\`Failed to create deal: \${err.message}\`);
-  }
-}
-
-/**
- * Update existing deal in Bitrix24 CRM
- */
-async function updateDeal(b24: any, inputData: any): Promise<any> {
-  try {
-    const { dealId, updateFields } = inputData;
-    
-    if (!dealId) {
-      throw new Error('Deal ID is required for update operation');
-    }
-    
-    const result = await b24.call('crm.deal.update', {
-      id: dealId,
-      fields: {
-        ...updateFields,
-        DATE_MODIFY: new Date().toISOString()
-      }
-    });
-    
-    console.log('Deal updated:', result);
-    
-    return {
-      status: 'success',
-      message: 'Deal updated successfully',
-      data: {
-        dealId,
-        updated: result.result
-      }
-    };
-    
-  } catch (err: any) {
-    console.error('Ошибка при обновлении сделки:', err.message);
-    throw new Error(\`Failed to update deal: \${err.message}\`);
-  }
-}
-
-/**
- * Get contacts from Bitrix24 CRM
- */
-async function getContacts(b24: any, limit: number): Promise<any> {
-  try {
-    const result = await b24.call('crm.contact.list', {
-      order: { DATE_CREATE: 'DESC' },
-      select: ['ID', 'NAME', 'LAST_NAME', 'EMAIL', 'PHONE', 'DATE_CREATE'],
-      start: 0,
-      limit: limit
-    });
-    
-    console.log('Контакты:', result);
-    
-    return {
-      status: 'success',
-      message: \`Found \${result.result.length} contacts\`,
-      data: {
-        contacts: result.result,
-        total: result.total
-      }
-    };
-    
-  } catch (err: any) {
-    console.error('Ошибка при получении контактов:', err.message);
-    throw new Error(\`Failed to get contacts: \${err.message}\`);
-  }
-}
-
-// Export the main function
-export default executeBitrix24Activity;`
+  // Установка исходящих параметров
+  params["field_output_1"] = [sum];
+  params["field_output_2"] = [product];
+  
+  logger.info("Обработка завершена успешно");
+  
+} catch (error) {
+  logger.error("Ошибка при обработке:", error);
+  throw error;
+}`
     testResult.value = ''
     
     // Store original data
@@ -1353,59 +1059,103 @@ const removeOutputField = (index: number) => {
 // Request Testing functions
 const executeTest = async () => {
   try {
-    // Clear previous logs
+    isTestRunning.value = true
+    // Clear previous logs and results
     activityLogs.value = []
+    outputResults.value = {}
     
     // Add initial logs
-    addLog('DEBUG', 'Test execution initiated')
-    addLog('INFO', '🚀 Starting activity test run', '🚀')
+    addLog('INFO', 'Запуск тестирования активити', '🚀')
     
     const timestamp = new Date().toISOString()
-    console.log('Test execution started:', timestamp)
+    console.log('Начало выполнения теста:', timestamp)
     
-    // Simulate processing with logs
-    await new Promise(resolve => setTimeout(resolve, 500))
-    addLog('DEBUG', `Input fields validation: ${inputFields.value.length} fields found`)
-    addLog('DEBUG', `Output fields configuration: ${outputFields.value.length} fields expected`)
+    // Validate input fields have test values
+    const fieldsWithoutValues = inputFields.value.filter(field => !field.testValue)
+    if (fieldsWithoutValues.length > 0) {
+      addLog('WARN', `Некоторые входные поля не имеют тестовых значений: ${fieldsWithoutValues.map(f => f.code).join(', ')}`, '⚠️')
+    }
     
-    await new Promise(resolve => setTimeout(resolve, 300))
-    addLog('INFO', 'Bitrix24 SDK initialization...')
+    // Prepare request payload
+    const inParams = inputFields.value.map(field => ({
+      name: field.code,
+      desc: field.name || `Поле ${field.code}`,
+      value: field.testValue || ''
+    }))
     
-    await new Promise(resolve => setTimeout(resolve, 200))
-    addLog('INFO', 'Webhook URL validated successfully')
+    const outParams = outputFields.value.map(field => ({
+      name: field.code,
+      desc: field.name || `Поле ${field.code}`,
+      multiple: field.isMultiple
+    }))
     
-    await new Promise(resolve => setTimeout(resolve, 400))
-    addLog('INFO', 'Executing activity code...')
+    // Encode activity code to base64
+    const activityCodeBase64 = btoa(unescape(encodeURIComponent(testCode.value)))
     
-    // Simulate some warnings
-    await new Promise(resolve => setTimeout(resolve, 600))
-    addLog('WARN', 'Large dataset detected, performance may be affected', '⚠️')
+    const requestPayload = {
+      inParams,
+      outParams,
+      activityCode: activityCodeBase64
+    }
     
-    await new Promise(resolve => setTimeout(resolve, 300))
-    addLog('INFO', 'Processing CRM data...')
+    // Make POST request to Yandex Cloud Function
+    addLog('INFO', 'Отправка запроса на сервер', '📤')
     
-    // Simulate error handling
-    await new Promise(resolve => setTimeout(resolve, 200))
-    addLog('ERROR', 'Minor validation error in record #42, skipping', '❌')
+    const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/eval', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestPayload)
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
     
-    await new Promise(resolve => setTimeout(resolve, 500))
-    addLog('INFO', 'Data transformation completed successfully', '✅')
+    const responseData = await response.json()
+    addLog('INFO', 'Данные ответа получены и обработаны', '✅')
     
-    // Performance metrics
-    await new Promise(resolve => setTimeout(resolve, 100))
-    addLog('PERF', 'Execution time: 2.1s | Memory usage: 67.3MB | API calls: 15', '📊')
+    // Store output results
+    if (responseData.params) {
+      outputResults.value = responseData.params
+    }
     
-    addLog('INFO', 'Test execution completed successfully', '🎉')
+    // Process logs from response
+    if (responseData.logs && Array.isArray(responseData.logs)) {
+      responseData.logs.forEach((logEntry: any) => {
+        const level = logEntry.level?.toUpperCase() || 'INFO'
+        let message = ''
+        
+        if (typeof logEntry.message === 'string') {
+          message = logEntry.message
+        } else if (typeof logEntry.message === 'object') {
+          message = JSON.stringify(logEntry.message, null, 2)
+        } else {
+          message = String(logEntry.message)
+        }
+        
+        // Map log level to our format
+        const mappedLevel = (['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'].includes(level)) 
+          ? level as ActivityLog['level'] 
+          : 'INFO'
+        
+        addLog(mappedLevel, message)
+      })
+    }
     
-    console.log('Input fields:', inputFields.value)
-    console.log('Output fields:', outputFields.value)
-    console.log('Code to execute:', testCode.value)
-    console.log('Test execution completed - see comprehensive logs above')
+    // addLog('INFO', 'Тестирование выполнено успешно', '🎉')
+    
+    console.log('Request payload:', requestPayload)
+    console.log('Response data:', responseData)
+    console.log('Тестирование выполнено успешно')
     
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка'
-    addLog('FATAL', `Critical error during test execution: ${errorMessage}`, '💀')
-    console.error('Ошибка выполнения теста:', errorMessage)
+    addLog('FATAL', `Критическая ошибка при выполнении теста: ${errorMessage}`, '💀')
+    console.error('Ошибка выполнения теста:', error)
+  } finally {
+    isTestRunning.value = false
   }
 }
 
@@ -1421,6 +1171,24 @@ const clearTestData = () => {
 const clearLogs = () => {
   console.log('Clearing activity logs...')
   activityLogs.value = []
+  // Clear filters when clearing logs
+  activeLogFilters.value.clear()
+}
+
+// Log filter management functions
+const toggleLogFilter = (level: ActivityLog['level']) => {
+  if (activeLogFilters.value.has(level)) {
+    activeLogFilters.value.delete(level)
+  } else {
+    activeLogFilters.value.add(level)
+  }
+  
+  console.log('Active log filters:', Array.from(activeLogFilters.value))
+}
+
+const clearLogFilters = () => {
+  activeLogFilters.value.clear()
+  console.log('Cleared all log filters')
 }
 
 const downloadLogs = () => {
@@ -1480,6 +1248,75 @@ const addLog = (level: ActivityLog['level'], message: string, emoji?: string) =>
   })
 }
 
+// Helper functions for output field display
+const getFieldDescription = (fieldCode: string | number): string => {
+  // Сначала ищем среди выходных полей
+  const outputField = outputFields.value.find(f => f.code === String(fieldCode))
+  if (outputField?.name) {
+    return outputField.name
+  }
+  
+  // Затем ищем среди входных полей
+  const inputField = inputFields.value.find(f => f.code === String(fieldCode))
+  if (inputField?.name) {
+    return inputField.name
+  }
+  
+  // Если не найдено, возвращаем дефолтное значение
+  return `Поле ${fieldCode}`
+}
+
+const getOutputFieldDescription = (fieldCode: string | number): string => {
+  return getFieldDescription(fieldCode)
+}
+
+const getOutputFieldMultiple = (fieldCode: string | number): boolean => {
+  const field = outputFields.value.find(f => f.code === String(fieldCode))
+  return field?.isMultiple || false
+}
+
+const getValueType = (value: any): string => {
+  if (value === null || value === undefined) return 'Null'
+  if (Array.isArray(value)) return 'Array'
+  if (typeof value === 'object') return 'Object'
+  if (typeof value === 'string') return 'String'
+  if (typeof value === 'number') return 'Number'
+  if (typeof value === 'boolean') return 'Boolean'
+  return 'Unknown'
+}
+
+const getValueDisplayClass = (value: any): string => {
+  const type = getValueType(value)
+  const classes = {
+    'String': 'text-green-600 bg-green-50',
+    'Number': 'text-purple-600 bg-purple-50',
+    'Boolean': 'text-blue-600 bg-blue-50',
+    'Array': 'text-orange-600 bg-orange-50',
+    'Object': 'text-gray-600 bg-gray-100',
+    'Null': 'text-gray-400 bg-gray-50'
+  }
+  return classes[type as keyof typeof classes] || 'text-gray-600 bg-gray-100'
+}
+
+const formatDisplayValue = (value: any): string => {
+  if (value === null || value === undefined) return 'null'
+  if (typeof value === 'string') return `"${value}"`
+  if (Array.isArray(value)) {
+    if (value.length > 3) {
+      return `[${value.slice(0, 3).map(v => JSON.stringify(v)).join(', ')}, ...] (${value.length} items)`
+    }
+    return JSON.stringify(value)
+  }
+  if (typeof value === 'object') {
+    const keys = Object.keys(value)
+    if (keys.length > 3) {
+      return `{${keys.slice(0, 3).join(', ')}, ...} (${keys.length} keys)`
+    }
+    return JSON.stringify(value)
+  }
+  return String(value)
+}
+
 const startEditingTitle = () => {
   editableTitle.value = activityTitle.value
   isEditingTitle.value = true
@@ -1530,6 +1367,117 @@ const configureMonacoEditor = () => {
     monaco.languages.registerCompletionItemProvider('typescript', {
       provideCompletionItems: (model: any, position: any) => {
         const suggestions = [
+          {
+            label: 'activity-basic-template',
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: [
+              '// Базовый шаблон активити с работой с params и logger',
+              'logger.info("Активити запущено");',
+              '',
+              '// Получение входящих параметров',
+              'const input1 = params["field_input_1"];',
+              'const input2 = params["field_input_2"];',
+              '',
+              'logger.debug("Входящие параметры:", { input1, input2 });',
+              '',
+              '// Обработка данных',
+              'try {',
+              '\tconst result1 = ${1:input1 + input2};',
+              '\tconst result2 = ${2:input1 * input2};',
+              '\t',
+              '\t// Установка исходящих параметров',
+              '\tparams["field_output_1"] = [result1];',
+              '\tparams["field_output_2"] = [result2];',
+              '\t',
+              '\tlogger.info("Обработка завершена успешно");',
+              '} catch (error) {',
+              '\tlogger.error("Ошибка при обработке:", error);',
+              '\tthrow error;',
+              '}'
+            ].join('\n'),
+            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
+            documentation: 'Базовый шаблон активити с работой с входящими и исходящими параметрами'
+          },
+          {
+            label: 'params-get-input',
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: [
+              '// Получение входящих параметров',
+              'const ${1:paramName} = params["${2:field_input_1}"];',
+              'logger.debug("Получен параметр ${1:paramName}:", ${1:paramName});'
+            ].join('\n'),
+            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
+            documentation: 'Получение входящего параметра с логированием'
+          },
+          {
+            label: 'params-set-output',
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: [
+              '// Установка исходящего параметра',
+              'params["${1:field_output_1}"] = [${2:value}];',
+              'logger.info("Установлен исходящий параметр ${1:field_output_1}:", ${2:value});'
+            ].join('\n'),
+            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
+            documentation: 'Установка исходящего параметра с логированием'
+          },
+          {
+            label: 'logger-all-levels',
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: [
+              '// Логирование на всех уровнях',
+              'logger.debug("${1:Отладочная информация}", ${2:data});',
+              'logger.info("${3:Информационное сообщение}");',
+              'logger.warn("${4:Предупреждение}");',
+              'logger.error("${5:Ошибка}:", ${6:error});',
+              'logger.fatal("${7:Критическая ошибка}");'
+            ].join('\n'),
+            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
+            documentation: 'Примеры логирования на всех доступных уровнях'
+          },
+          {
+            label: 'activity-with-bitrix24',
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: [
+              '// Активити с интеграцией Bitrix24',
+              'import { B24Hook } from \'@bitrix24/b24jssdk\';',
+              '',
+              'logger.info("Запуск активити с Bitrix24 интеграцией");',
+              '',
+              '// Получение параметров',
+              'const webhookUrl = params["field_input_1"] || "https://your_domain.bitrix24.com/rest/1/xxxx/";',
+              'const operation = params["field_input_2"] || "crm.deal.list";',
+              '',
+              'logger.debug("Параметры Bitrix24:", { webhookUrl, operation });',
+              '',
+              'try {',
+              '\t// Инициализация Bitrix24 Hook',
+              '\tconst b24 = B24Hook.fromWebhookUrl(webhookUrl);',
+              '\tlogger.info("Bitrix24 Hook инициализирован");',
+              '\t',
+              '\t// Выполнение запроса',
+              '\tconst result = await b24.call(operation, {',
+              '\t\torder: { DATE_CREATE: "DESC" },',
+              '\t\tlimit: 50',
+              '\t});',
+              '\t',
+              '\tlogger.info(`Получено ${result.result?.length || 0} записей`);',
+              '\t',
+              '\t// Установка результата',
+              '\tparams["field_output_1"] = [JSON.stringify(result.result)];',
+              '\tparams["field_output_2"] = [`Операция ${operation} выполнена успешно`];',
+              '\t',
+              '\tlogger.info("Активити выполнено успешно");',
+              '',
+              '} catch (error) {',
+              '\tlogger.error("Ошибка выполнения активити:", error);',
+              '\tparams["field_output_1"] = [""];',
+              '\tparams["field_output_2"] = [`Ошибка: ${error.message}`];',
+              '\tthrow error;',
+              '}'
+            ].join('\n'),
+            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
+            documentation: 'Полный шаблон активити с Bitrix24 интеграцией, логированием и обработкой ошибок'
+          },
           {
             label: 'nodejs-async-function',
             kind: monaco.languages.CompletionItemKind.Snippet,
@@ -2027,6 +1975,20 @@ const configureMonacoEditor = () => {
         }
       }
       
+      // Activity Context - Global variables available in activity code
+      declare var params: {
+        [key: string]: any;
+      };
+      
+      declare var logger: {
+        debug(message: string, ...args: any[]): void;
+        info(message: string, ...args: any[]): void;
+        warn(message: string, ...args: any[]): void;
+        error(message: string, ...args: any[]): void;
+        fatal(message: string, ...args: any[]): void;
+        log(level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL', message: string, ...args: any[]): void;
+      };
+      
       // Common Bitrix24 CRM field types
       interface DealFields {
         ID?: string;
@@ -2144,3 +2106,24 @@ useHead({
   })
 })
 </script>
+
+<style scoped>
+/* Log filter transition animations */
+.log-filter-enter-active, .log-filter-leave-active {
+  transition: all 0.3s ease;
+}
+
+.log-filter-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.log-filter-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.log-filter-move {
+  transition: transform 0.3s ease;
+}
+</style>
