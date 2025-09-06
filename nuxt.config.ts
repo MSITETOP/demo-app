@@ -36,12 +36,12 @@ export default defineNuxtConfig({
   // Enable static site generation for GitHub Pages
   nitro: {
     prerender: {
-      routes: ['/sitemap.xml']
+      //routes: ['/sitemap.xml']
     }
   },
   
   // Configure for static deployment
-  ssr: false,
+  ssr: true,
 
   vite: {
     server: {
