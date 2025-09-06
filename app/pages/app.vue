@@ -4,13 +4,12 @@
     <div class="flex justify-between items-center mb-8">
       <h1 class="text-2xl font-bold text-gray-800">Мои активити и роботы</h1>
       <B24Button 
-        color="primary" 
+        label="Добавить активити / робота"
+        color="air-primary-success" 
         size="md"
+        :icon="PlusIcon"
         @click="addActivity"
-      >
-        <B24Icon name="plus" class="mr-2" />
-        + добавить активити / робота
-      </B24Button>
+      />
     </div>
 
     <!-- Activities Grid (3 columns) -->
@@ -23,19 +22,34 @@
         <!-- Activity card header -->
         <div class="flex justify-between items-start">
           <div class="flex items-center">
-              <h3 class="font-semibold text-gray-800">{{ activity.name }}</h3>
+              <h3 
+                class="font-semibold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors"
+                @click="editActivity(activity.id)"
+              >
+                {{ activity.name }}
+              </h3>
           </div>
           
-          <!-- Edit button -->
-          <B24Button
-            color="secondary"
-            size="sm"
-            variant="outline"
-            @click="editActivity(activity.id)"
-            class="p-2"
-          >
-            <B24Icon name="edit" class="text-gray-600" >Редактировать</B24Icon>
-          </B24Button>
+          <!-- Action buttons -->
+          <div class="flex gap-2">
+            <!-- Edit button -->
+            <B24Button
+              color="secondary"
+              size="sm"
+              variant="outline"
+              :icon="EditPencilIcon"
+              @click="editActivity(activity.id)"
+            />
+            
+            <!-- Delete button -->
+            <B24Button
+              color="danger"
+              size="sm"
+              variant="outline"
+              :icon="TrashcanIcon"
+              @click="deleteActivity(activity.id)"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -48,17 +62,19 @@
       <h3 class="text-lg font-medium text-gray-900 mb-2">Нет созданных активити</h3>
       <p class="text-gray-500 mb-6">Создайте свой первый активити или робота для начала работы</p>
       <B24Button 
-        color="primary" 
+        label="Создать первый активити"
+        color="primary"
+        :icon="PlusIcon"
         @click="addActivity"
-      >
-        <B24Icon name="plus" class="mr-2" />
-        Создать первый активити
-      </B24Button>
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import EditPencilIcon from '@bitrix24/b24icons-vue/main/EditPencilIcon'
+import TrashcanIcon from '@bitrix24/b24icons-vue/outline/TrashcanIcon'
+import PlusIcon from '@bitrix24/b24icons-vue/button/PlusIcon'
 interface Activity {
   id: string
   name: string
@@ -73,7 +89,7 @@ interface Activity {
 const activities = ref<Activity[]>([
   {
     id: '1',
-    name: 'Отправка уведомлений',
+    name: 'Получене заявок с формы сайта ',
     type: 'активити',
     icon: 'mail',
     endpoint: 'https://api.example.com/notify',
@@ -108,6 +124,15 @@ const addActivity = () => {
 const editActivity = (id: string) => {
   // Navigate to activity edit page
   navigateTo(`/activity/${id}`)
+}
+
+const deleteActivity = (id: string) => {
+  // Confirm deletion
+  if (confirm('Вы уверены, что хотите удалить это активити?')) {
+    activities.value = activities.value.filter(activity => activity.id !== id)
+    // Here you would also make an API call to delete from the server
+    console.log(`Deleted activity with id: ${id}`)
+  }
 }
 
 const formatDate = (date: Date) => {

@@ -52,9 +52,10 @@ onMounted(async () => {
         <B24Button
           to="https://vkvideo.ru/playlist/-24162245_45684532"
           :icon="RecordVideoIcon"
-          color="link"
+          color="air-tertiary-no-accent"
           target="_blank"
-          class="normal-case text-lg font-regular text-base-600"
+          class=""
+          size="xl"
           label="Инструкция"
         />
         <div class="flex items-center gap-4 bg-support px-6 py-3 rounded-sm">

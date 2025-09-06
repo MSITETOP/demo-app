@@ -2,54 +2,30 @@
   <div class="container mx-auto p-6">
     <!-- Editable Header -->
     <div class="mb-8">
-      <div class="flex justify-between items-start">
-        <div class="flex-1">
-          <div v-if="!isEditingTitle" class="flex items-center gap-3">
-            <h1 
-              class="text-2xl font-bold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors"
-              @click="startEditingTitle"
-              title="Нажмите для редактирования"
-            >
-              {{ activityTitle }}
-            </h1>
-            <B24Button
-              size="sm"
-              variant="outline"
-              @click="startEditingTitle"
-              class="p-2"
-            >
-              <B24Icon name="settings" class="w-4 h-4 text-gray-600" />
-            </B24Button>
-          </div>
-          
-          <div v-else class="flex items-center gap-3">
-            <input
-              ref="titleInput"
-              v-model="editableTitle"
-              type="text"
-              class="text-2xl font-bold text-gray-800 bg-transparent border-b-2 border-blue-500 focus:outline-none focus:border-blue-600 min-w-0 flex-1"
-              @blur="saveTitle"
-              @keyup.enter="saveTitle"
-              @keyup.escape="cancelEdit"
-              placeholder="Введите название активити"
-            />
-            <div class="flex gap-2">
-              <B24Button
-                size="sm"
-                color="primary"
-                @click="saveTitle"
-              >
-                ✓
-              </B24Button>
-              <B24Button
-                size="sm"
-                variant="outline"
-                @click="cancelEdit"
-              >
-                ✕
-              </B24Button>
-            </div>
-          </div>
+      <div class="flex justify-between items-center">
+        <div class="flex-1 flex items-center gap-3">
+          <Pencil60Icon class="w-6 h-6 text-gray-500" />
+          <input
+            ref="titleInput"
+            type="text"
+            v-model="activityTitle"
+            class="text-2xl font-bold text-gray-800 bg-transparent p-0 border-0 focus:outline-none focus:border-0 min-w-0 flex-1"
+            placeholder="Введите название активити"
+          />
+        </div>
+        <!-- Delete Activity Button -->
+        <div class="ml-4">
+          <B24Button
+            color="danger"
+            variant="solid"
+            size="sm"
+            class="p-2 bg-red-600 hover:bg-red-700 text-white"
+            title="Удалить активити"
+            :disabled="activityId === '0'"
+            @click="deleteActivity"
+          >
+            <TrashcanIcon class="w-4 h-4" />
+          </B24Button>
         </div>
       </div>
     </div>
@@ -107,7 +83,7 @@
             </div>
             
             <!-- Column 4: Delete Button -->
-            <div class="col-span-1 flex justify-end">
+            <div class="col-span-1 flex justify-end" style="line-height: 2.5rem; margin-top: 1.5rem;">
               <B24Button
                 color="danger"
                 variant="outline"
@@ -116,7 +92,7 @@
                 class="p-2"
                 title="Удалить поле"
               >
-                <span class="text-red-600">✕</span>
+                <span class="text-white">✕</span>
               </B24Button>
             </div>
           </div>
@@ -180,7 +156,7 @@
             </div>
             
             <!-- Column 3: Multiple Field Checkbox -->
-            <div class="col-span-1 flex items-center" style="line-height: 2.5rem; margin-top: 1.75rem;">
+            <div class="col-span-1 flex items-center" style="line-height: 2.5rem; margin-top: 1.5rem;">
               <label class="flex items-center gap-2 cursor-pointer">
                 <input
                   v-model="field.isMultiple"
@@ -192,7 +168,7 @@
             </div>
             
             <!-- Column 4: Delete Button -->
-            <div class="col-span-1 flex justify-end" style="line-height: 2.5rem; margin-top: 1.75rem;">
+            <div class="col-span-1 flex justify-end" style="line-height: 2.5rem; margin-top: 1.5rem;">
               <B24Button
                 color="danger"
                 variant="outline"
@@ -201,7 +177,7 @@
                 class="p-2"
                 title="Удалить поле"
               >
-                <span class="text-red-600">✕</span>
+                <span class="text-white">✕</span>
               </B24Button>
             </div>
           </div>
@@ -401,7 +377,7 @@
             </div>
             
             <!-- Log Statistics (if logs exist) -->
-            <div v-if="activityLogs.length > 0" class="grid grid-cols-6 gap-4 mb-4">
+            <div v-if="activityLogs.length > 0" class="grid grid-cols-4 gap-4 mb-4">
               <button 
                 @click="toggleLogFilter('DEBUG')"
                 :class="[
@@ -450,36 +426,13 @@
                 <div class="text-2xl font-bold text-red-600">{{ logStats.ERROR }}</div>
                 <div class="text-xs text-red-600">ERROR</div>
               </button>
-              <button 
-                @click="toggleLogFilter('FATAL')"
-                :class="[
-                  'p-3 rounded text-center transition-all duration-200 border-2',
-                  activeLogFilters.has('FATAL') 
-                    ? 'bg-gray-200 border-black shadow-md' 
-                    : 'bg-gray-50 border-transparent hover:bg-gray-100 hover:border-gray-300'
-                ]"
-              >
-                <div class="text-2xl font-bold text-black">{{ logStats.FATAL }}</div>
-                <div class="text-xs text-black">FATAL</div>
-              </button>
-              <button 
-                @click="toggleLogFilter('PERF')"
-                :class="[
-                  'p-3 rounded text-center transition-all duration-200 border-2',
-                  activeLogFilters.has('PERF') 
-                    ? 'bg-cyan-100 border-cyan-500 shadow-md' 
-                    : 'bg-gray-50 border-transparent hover:bg-cyan-50 hover:border-cyan-200'
-                ]"
-              >
-                <div class="text-2xl font-bold text-cyan-600">{{ logStats.PERF }}</div>
-                <div class="text-xs text-cyan-600">PERF</div>
-              </button>
             </div>
             
             <!-- Terminal-style log container -->
             <div class="bg-gray-50 rounded-lg border border-gray-300 h-80 overflow-y-auto font-mono text-sm">
               <div v-if="activityLogs.length === 0" class="p-4 text-center text-gray-500">
-                <p>Логи появятся здесь после выполнения теста</p>
+                <p>Логи появятся после выполнения теста</p>
+                <p class="text-sm">Нажмите "Выполнить тест" для получения логов</p>
               </div>
               
               <div v-else-if="filteredLogs.length === 0 && activeLogFilters.size > 0" class="p-4 text-center text-gray-500">
@@ -547,6 +500,8 @@
 
 <script setup lang="ts">
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
+import TrashcanIcon from '@bitrix24/b24icons-vue/outline/TrashcanIcon'
+import Pencil60Icon from '@bitrix24/b24icons-vue/actions/Pencil60Icon'
 
 interface InputField {
   id: string
@@ -677,6 +632,12 @@ onMounted(() => {
 watch([activityTitle, inputFields, outputFields, testCode], () => {
   checkForChanges()
 }, { deep: true })
+
+// Additional watch specifically for the title input
+watch(activityTitle, (newTitle, oldTitle) => {
+  console.log('Title changed:', { oldTitle, newTitle })
+  checkForChanges()
+})
 
 // Function to check if current data differs from original
 const checkForChanges = () => {
@@ -1981,12 +1942,10 @@ const configureMonacoEditor = () => {
       };
       
       declare var logger: {
-        debug(message: string, ...args: any[]): void;
-        info(message: string, ...args: any[]): void;
-        warn(message: string, ...args: any[]): void;
-        error(message: string, ...args: any[]): void;
-        fatal(message: string, ...args: any[]): void;
-        log(level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL', message: string, ...args: any[]): void;
+        debug(message: string): void;
+        info(message: string): void;
+        warn(message: string): void;
+        error(message: string): void;
       };
       
       // Common Bitrix24 CRM field types
@@ -2093,6 +2052,43 @@ const saveActivity = async () => {
     alert(`Ошибка при сохранении: ${errorMessage}`)
   } finally {
     isSaving.value = false
+  }
+}
+
+// Delete activity function
+const deleteActivity = async () => {
+  if (activityId.value === '0') {
+    // Для новых активити просто возвращаемся на главную
+    router.push('/')
+    return
+  }
+  
+  // Подтверждение удаления
+  const confirmed = confirm(`Вы уверены, что хотите удалить активити "${activityTitle.value}"?\n\nЭто действие нельзя отменить.`)
+  
+  if (!confirmed) {
+    return
+  }
+  
+  try {
+    console.log(`Удаление активити ${activityId.value}: ${activityTitle.value}`)
+    
+    // TODO: Отправить запрос на удаление в backend API
+    // Пока что симулируем API вызов
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    console.log('Активити успешно удалено')
+    
+    // Показать сообщение об успехе
+    alert('Активити успешно удалено!')
+    
+    // Перейти на главную страницу
+    router.push('/')
+    
+  } catch (error) {
+    console.error('Ошибка при удалении активити:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка'
+    alert(`Ошибка при удалении: ${errorMessage}`)
   }
 }
 
