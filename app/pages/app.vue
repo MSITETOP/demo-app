@@ -12,6 +12,39 @@
       />
     </div>
 
+    <!-- Tariff Information Alert -->
+    <B24Alert 
+      v-if="!isLoading && !error"
+      color="air-secondary-accent-2"
+      :icon="MoneyIcon"
+      :title="`Тарифный план: ${tariffInfo.planName}`"
+      :description="getTariffDescription()"
+      :actions="[{
+        label: 'Увеличить лимит',
+        color: 'air-primary-success',
+        size: 'sm',
+        onClick: upgradePlan
+      }]"
+      class="mb-6"
+    />
+
+    <!-- Tariff Skeleton -->
+    <div v-if="isLoading" class="mb-6 bg-white rounded-lg border border-gray-200 p-4">
+      <div class="flex items-start gap-3">
+        <!-- Icon skeleton -->
+        <B24Skeleton class="w-5 h-5 rounded flex-shrink-0 mt-0.5" />
+        
+        <div class="flex-1">
+          <!-- Title skeleton -->
+          <B24Skeleton class="h-5 w-48 mb-2" />
+          
+          <!-- Description skeleton -->
+          <B24Skeleton class="h-4 w-full max-w-md" />
+        </div>
+        
+      </div>
+    </div>
+
     <!-- Loading state -->
     <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div 
@@ -91,6 +124,7 @@
 import EditPencilIcon from '@bitrix24/b24icons-vue/main/EditPencilIcon'
 import TrashcanIcon from '@bitrix24/b24icons-vue/outline/TrashcanIcon'
 import PlusIcon from '@bitrix24/b24icons-vue/button/PlusIcon'
+import MoneyIcon from '@bitrix24/b24icons-vue/outline/MoneyIcon'
 import { initializeB24Frame } from '@bitrix24/b24jssdk'
 interface Activity {
   id: string
@@ -107,10 +141,23 @@ interface ApiResponse {
   }[]
 }
 
+interface TariffInfo {
+  limit: number
+  used: number
+  remaining: number
+  planName: string
+}
+
 const activities = ref<Activity[]>([])
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 const memberId = ref<string>('')
+const tariffInfo = ref<TariffInfo>({
+  limit: 1000,
+  used: 0,
+  remaining: 0,
+  planName: 'Бесплатный'
+})
 
 // Initialize Bitrix24 frame and get member_id
 const $b24 = await initializeB24Frame()
@@ -155,6 +202,15 @@ const loadActivities = async () => {
       name: item.name,
       usage: item.usage
     }))
+    
+    // Calculate tariff information
+    const totalUsed = data.activities.reduce((sum, activity) => sum + activity.usage, 0)
+    tariffInfo.value = {
+      limit: data.limit,
+      used: totalUsed,
+      remaining: Math.max(0, data.limit - totalUsed),
+      planName: data.limit <= 1000 ? 'Бесплатный' : 'Премиум'
+    }
   } catch (err) {
     console.error('Error loading activities:', err)
     error.value = 'Ошибка загрузки активити'
@@ -223,6 +279,17 @@ const formatDate = (date: Date) => {
     month: '2-digit', 
     year: 'numeric'
   })
+}
+
+const getTariffDescription = () => {
+  const remainingClass = tariffInfo.value.remaining <= 10 ? 'красный' : 'зеленый'
+  return `Лимит запусков: ${tariffInfo.value.limit} | Использовано: ${tariffInfo.value.used} | Остаток: ${tariffInfo.value.remaining}${tariffInfo.value.remaining <= 10 ? ' (критично мало!)' : ''}`
+}
+
+const upgradePlan = () => {
+  // Here you can implement plan upgrade logic
+  // For now, we'll show an alert with upgrade options
+  alert('Функция покупки расширенного тарифа будет доступна в ближайшее время. Обратитесь в поддержку для увеличения лимита.')
 }
 
 const getStatusClass = (status: string) => {

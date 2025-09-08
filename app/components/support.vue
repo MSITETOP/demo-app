@@ -42,7 +42,7 @@
 </script>
 
 <template>
-    <B24Slideover side='right' :b24ui="{content: 'sm:max-w-[500px] sm:max-h-[100%]', body: 'bbbbbbbbbb', header: 'support-widget-header', body: 'support-widget-body' }">
+    <B24Slideover side='right' :b24ui="{content: 'sm:max-w-[500px] sm:max-h-[100%]', header: 'support-widget-header', body: 'support-widget-body' }">
         <div class="cust-widget" >
             <div class="puls"/>
             <div class="icon-container">
