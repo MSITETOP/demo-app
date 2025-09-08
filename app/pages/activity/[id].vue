@@ -1,36 +1,154 @@
 <template>
   <div class="container mx-auto p-6">
-    <!-- Editable Header -->
-    <div class="mb-8">
-      <div class="flex justify-between items-center">
-        <div class="flex-1 flex items-center gap-3">
-          <Pencil60Icon class="w-6 h-6 text-gray-500" />
-          <input
-            ref="titleInput"
-            type="text"
-            v-model="activityTitle"
-            class="text-2xl font-bold text-gray-800 bg-transparent p-0 border-0 focus: min-w-0 flex-1"
-            placeholder="Введите название активити"
-          />
+    <!-- Loading State -->
+    <div v-if="isLoading" class="space-y-8">
+      <!-- Header Skeleton -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center">
+          <div class="flex-1 flex items-center gap-3">
+            <B24Skeleton class="w-6 h-6" />
+            <B24Skeleton class="h-8 w-64" />
+          </div>
+          <div class="ml-4">
+            <B24Skeleton class="w-10 h-8" />
+          </div>
         </div>
-        <!-- Delete Activity Button -->
-        <div class="ml-4">
-          <B24Button
-            color="danger"
-            variant="solid"
-            size="sm"
-            class="p-2 bg-red-600 hover:bg-red-700 text-white"
-            title="Удалить активити"
-            :disabled="activityId === '0'"
-            @click="deleteActivity"
-          >
-            <TrashcanIcon class="w-4 h-4" />
-          </B24Button>
+      </div>
+
+      <!-- Input Parameters Section Skeleton -->
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <B24Skeleton class="h-6 w-48 mb-6" />
+        
+        <div class="space-y-4">
+          <div v-for="i in 2" :key="'input-skeleton-' + i" class="grid grid-cols-12 gap-4 items-center p-4 bg-gray-50 rounded-lg">
+            <div class="col-span-3">
+              <B24Skeleton class="h-4 w-16 mb-1" />
+              <B24Skeleton class="h-8 w-full" />
+            </div>
+            <div class="col-span-4">
+              <B24Skeleton class="h-4 w-20 mb-1" />
+              <B24Skeleton class="h-8 w-full" />
+            </div>
+            <div class="col-span-4">
+              <B24Skeleton class="h-4 w-32 mb-1" />
+              <B24Skeleton class="h-8 w-full" />
+            </div>
+            <div class="col-span-1 flex justify-end">
+              <B24Skeleton class="w-8 h-8" />
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6">
+          <B24Skeleton class="h-8 w-32" />
+        </div>
+      </div>
+      
+      <!-- Output Parameters Section Skeleton -->
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <B24Skeleton class="h-6 w-48 mb-6" />
+        
+        <div class="space-y-4">
+          <div v-for="i in 2" :key="'output-skeleton-' + i" class="grid grid-cols-12 gap-4 items-center p-4 bg-gray-50 rounded-lg">
+            <div class="col-span-3">
+              <B24Skeleton class="h-4 w-16 mb-1" />
+              <B24Skeleton class="h-8 w-full" />
+            </div>
+            <div class="col-span-7">
+              <B24Skeleton class="h-4 w-20 mb-1" />
+              <B24Skeleton class="h-8 w-full" />
+            </div>
+            <div class="col-span-1">
+              <B24Skeleton class="h-4 w-16" />
+            </div>
+            <div class="col-span-1 flex justify-end">
+              <B24Skeleton class="w-8 h-8" />
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6">
+          <B24Skeleton class="h-8 w-32" />
+        </div>
+      </div>
+
+      <!-- Activity Code Section Skeleton -->
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <B24Skeleton class="h-6 w-32 mb-6" />
+        
+        <div class="space-y-6">
+          <div class="w-full">
+            <B24Skeleton class="w-full h-96 rounded-md" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Request Testing Section Skeleton -->
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="flex justify-between items-center mb-6">
+          <B24Skeleton class="h-6 w-48" />
+          <B24Skeleton class="h-8 w-32" />
+        </div>
+        
+        <div class="space-y-6">
+          <div class="w-full">
+            <div class="bg-gray-50 border border-gray-300 rounded-md p-4">
+              <div class="text-center py-8">
+                <B24Skeleton class="h-4 w-64 mx-auto mb-2" />
+                <B24Skeleton class="h-4 w-48 mx-auto" />
+              </div>
+            </div>
+          </div>
+
+          <div class="w-full">
+            <div class="flex justify-between items-center mb-6">
+              <B24Skeleton class="h-6 w-16" />
+              <div class="flex gap-2">
+                <B24Skeleton class="h-8 w-20" />
+                <B24Skeleton class="h-8 w-24" />
+                <B24Skeleton class="h-8 w-24" />
+              </div>
+            </div>
+            
+            <B24Skeleton class="w-full h-80 rounded-lg" />
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Configuration Content -->
+    <!-- Actual Content - Hidden during loading -->
+    <div v-else>
+      <!-- Editable Header -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center">
+          <div class="flex-1 flex items-center gap-3">
+            <Pencil60Icon class="w-6 h-6 text-gray-500" />
+            <input
+              ref="titleInput"
+              type="text"
+              v-model="activityTitle"
+              class="text-2xl font-bold text-gray-800 bg-transparent p-0 border-0 focus: min-w-0 flex-1"
+              placeholder="Введите название активити"
+            />
+          </div>
+          <!-- Delete Activity Button -->
+          <div class="ml-4">
+            <B24Button
+              color="danger"
+              variant="solid"
+              size="sm"
+              class="p-2 bg-red-600 hover:bg-red-700 text-white"
+              title="Удалить активити"
+              :disabled="activityId === '0'"
+              @click="deleteActivity"
+            >
+              <TrashcanIcon class="w-4 h-4" />
+            </B24Button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuration Content -->
     <div class="space-y-8">
       <!-- Input Parameters Section -->
       <div class="bg-white rounded-lg border border-gray-200 p-6">
@@ -492,6 +610,7 @@
 
     <!-- Add bottom padding to account for fixed save bar -->
     <div class="h-20"></div>
+    </div>
 
 
   </div>
@@ -501,6 +620,7 @@
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import TrashcanIcon from '@bitrix24/b24icons-vue/outline/TrashcanIcon'
 import Pencil60Icon from '@bitrix24/b24icons-vue/actions/Pencil60Icon'
+import { initializeB24Frame } from '@bitrix24/b24jssdk'
 
 interface InputField {
   id: string
@@ -606,8 +726,13 @@ const getLogTextClass = (level: ActivityLog['level']) => {
 
 // Save management
 const isSaving = ref(false)
+const isLoading = ref(false)
 const lastSaved = ref('')
 const hasChanges = ref(false)
+const memberId = ref<string>('')
+
+// Initialize Bitrix24 frame and get member_id
+const $b24 = await initializeB24Frame()
 
 // Original data for change tracking
 const originalData = ref({
@@ -618,8 +743,19 @@ const originalData = ref({
 })
 
 // Load activity data on mount
-onMounted(() => {
-  loadActivityData()
+onMounted(async () => {
+  // Get member_id from auth data
+  const authData = $b24.auth.getAuthData()
+  if (authData && typeof authData === 'object') {
+    memberId.value = authData.member_id
+  }
+  
+  if (memberId.value) {
+    await loadActivityData()
+  } else {
+    console.error('No member_id found')
+    alert('Ошибка получения идентификатора пользователя')
+  }
   
   // Configure Monaco Editor for enhanced JavaScript experience
   nextTick(() => {
@@ -650,7 +786,7 @@ const checkForChanges = () => {
   hasChanges.value = JSON.stringify(currentData) !== JSON.stringify(originalData.value)
 }
 
-const loadActivityData = () => {
+const loadActivityData = async () => {
   // Handle new activity creation when ID is '0'
   if (activityId.value === '0') {
     activityTitle.value = 'Новое активити'
@@ -707,267 +843,100 @@ try {
     return
   }
   
-  // TODO: Load actual activity data from backend/storage
-  // For now, simulate loading data based on ID
-  const sampleActivities = [
-    { id: '1', name: 'Отправка уведомлений' },
-    { id: '2', name: 'Обработка заявок' },
-    { id: '3', name: 'Синхронизация данных' }
-  ]
-  
-  const activity = sampleActivities.find(a => a.id === activityId.value)
-  activityTitle.value = activity ? activity.name : `Активити #${activityId.value}`
-  
-  // Load sample input fields
-  inputFields.value = [
-    { id: '1', code: 'field_input_1', name: 'Первое поле', testValue: '' },
-    { id: '2', code: 'field_input_2', name: 'Второе поле', testValue: '' }
-  ]
-  fieldCounter.value = 3
-  
-  // Load sample output fields
-  outputFields.value = [
-    { id: '1', code: 'field_output_1', name: 'Результат обработки', isMultiple: false },
-    { id: '2', code: 'field_output_2', name: 'Статус выполнения', isMultiple: false }
-  ]
-  outputFieldCounter.value = 3
-  
-  // Load sample test data
-  testInputParams.value = '{\n  "user_id": 123,\n  "action": "process_data",\n  "params": {\n    "type": "notification"\n  }\n}'
-  testCode.value = `// Bitrix24 CRM Integration with Advanced Features
-// Demonstrates Bitrix24 SDK usage with batch operations and error handling
-
-import { B24Hook } from '@bitrix24/b24jssdk';
-import { EventEmitter } from 'events';
-
-/**
- * Advanced Bitrix24 activity processor
- * @param inputData - Input parameters with proper typing
- */
-async function processBitrix24Activity(inputData: {
-  operation: string;
-  webhookUrl: string;
-  batchSize?: number;
-  filters?: any;
-  userId?: number;
-}): Promise<any> {
-  console.log('🚀 Bitrix24 activity started:', inputData);
-  
-  const { 
-    operation, 
-    webhookUrl = 'https://your_domain.bitrix24.com/rest/1/xxxx/',
-    batchSize = 50,
-    filters = {},
-    userId
-  } = inputData;
-  
-  // Initialize Bitrix24 Hook
-  const b24 = B24Hook.fromWebhookUrl(webhookUrl);
-  
   try {
-    // Validate webhook URL format
-    if (!webhookUrl.includes('bitrix24.com/rest/')) {
-      throw new Error('Invalid Bitrix24 webhook URL format');
+    isLoading.value = true
+    
+    if (!memberId.value) {
+      throw new Error('Member ID not available')
     }
     
-    // Create activity processor instance
-    const processor = new Bitrix24Processor(b24, userId || 1);
-    
-    // Execute operation with proper error handling
-    const result = await processor.execute(operation, { batchSize, filters });
-    
-    return {
-      status: 'success',
-      operation,
-      result,
-      executedAt: new Date().toISOString(),
-      webhookDomain: new URL(webhookUrl).hostname
-    };
-    
-  } catch (error: any) {
-    console.error('❌ Bitrix24 activity failed:', error);
-    return {
-      status: 'error',
-      message: error.message,
-      code: error.code || 'BITRIX24_ERROR',
-      operation
-    };
-  }
-}
+    // Make POST request to get-activity endpoint
+    const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/get-activity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        member_id: memberId.value,
+        id: activityId.value
+      })
+    })
 
-/**
- * Bitrix24 processor class with EventEmitter for progress tracking
- */
-class Bitrix24Processor extends EventEmitter {
-  private b24: any;
-  private userId: number;
-  private startTime: number;
-  
-  constructor(b24Hook: any, userId: number) {
-    super();
-    this.b24 = b24Hook;
-    this.userId = userId;
-    this.startTime = Date.now();
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
     
-    // Set up event listeners for progress tracking
-    this.on('progress', (data) => {
-      console.log(\`Progress for user \${this.userId}:\`, data);
-    });
-  }
-  
-  async execute(operation: string, options: any): Promise<any> {
-    this.emit('progress', { operation, status: 'started' });
+    const activityData = await response.json()
     
-    switch (operation) {
-      case 'get_deals':
-        return this.getDealsWithBatch(options);
-      
-      case 'sync_contacts':
-        return this.syncContactsBatch(options);
-      
-      case 'batch_operations':
-        return this.performBatchOperations(options);
-        
-      case 'deal_pipeline_stats':
-        return this.getDealPipelineStats(options);
-      
-      default:
-        throw new Error(\`Unsupported operation: \${operation}\`);
-    }
-  }
-  
-  /**
-   * Get deals using your provided example with enhancements
-   */
-  private async getDealsWithBatch(options: any): Promise<any> {
-    try {
-      const { batchSize, filters } = options;
-      
-      // Your original example enhanced with batch processing
-      const result = await this.b24.call('crm.deal.list', {
-        order: { DATE_CREATE: 'DESC' },
-        filter: { STAGE_ID: 'NEW', ...filters }, // фильтр по стадии
-        select: ['ID', 'TITLE', 'STAGE_ID', 'DATE_CREATE', 'OPPORTUNITY', 'ASSIGNED_BY_ID'],
-        start: 0,
-        limit: batchSize
-      });
-
-      console.log('Сделки:', result);
-      
-      this.emit('progress', { operation: 'get_deals', status: 'completed', count: result.result.length });
-      
-      return {
-        deals: result.result,
-        total: result.total,
-        processingTime: Date.now() - this.startTime,
-        batchSize: result.result.length
-      };
-      
-    } catch (err: any) {
-      console.error('Ошибка при получении сделок:', err.message);
-      throw new Error(\`Failed to get deals: \${err.message}\`);
-    }
-  }
-  
-  /**
-   * Perform batch operations for better performance
-   */
-  private async performBatchOperations(options: any): Promise<any> {
-    try {
-      // Batch multiple API calls for efficiency
-      const batch = {
-        deals: ['crm.deal.list', {
-          order: { DATE_CREATE: 'DESC' },
-          filter: { STAGE_ID: 'NEW' },
-          select: ['ID', 'TITLE', 'STAGE_ID'],
-          limit: 10
-        }],
-        contacts: ['crm.contact.list', {
-          order: { DATE_CREATE: 'DESC' },
-          select: ['ID', 'NAME', 'LAST_NAME', 'EMAIL'],
-          limit: 10
-        }],
-        companies: ['crm.company.list', {
-          order: { DATE_CREATE: 'DESC' },
-          select: ['ID', 'TITLE', 'EMAIL'],
-          limit: 5
-        }]
-      };
-      
-      // Execute batch call
-      const batchResult = await this.b24.callBatch(batch);
-      
-      this.emit('progress', { operation: 'batch_operations', status: 'completed' });
-      
-      return {
-        batchResults: batchResult,
-        operations: Object.keys(batch),
-        processingTime: Date.now() - this.startTime
-      };
-      
-    } catch (err: any) {
-      throw new Error(\`Batch operations failed: \${err.message}\`);
-    }
-  }
-  
-  /**
-   * Get deal pipeline statistics
-   */
-  private async getDealPipelineStats(options: any): Promise<any> {
-    try {
-      // Get deals grouped by stages
-      const stages = ['NEW', 'PREPARATION', 'PREPAYMENT_INVOICE', 'EXECUTING', 'FINAL_INVOICE'];
-      const stats: any = {};
-      
-      for (const stage of stages) {
-        const result = await this.b24.call('crm.deal.list', {
-          filter: { STAGE_ID: stage },
-          select: ['ID', 'OPPORTUNITY'],
-          limit: 1000
-        });
-        
-        stats[stage] = {
-          count: result.result.length,
-          totalValue: result.result.reduce((sum: number, deal: any) => 
-            sum + (parseFloat(deal.OPPORTUNITY) || 0), 0
-          )
-        };
+    // Load activity data from API response
+    activityTitle.value = activityData.title || `Активити #${activityId.value}`
+    
+    // Load input fields - add unique IDs if not present
+    inputFields.value = (activityData.inputFields || []).map((field: any, index: number) => ({
+      id: field.id || (Date.now() + index).toString(),
+      code: field.code,
+      name: field.name || '',
+      testValue: field.testValue || ''
+    }))
+    fieldCounter.value = inputFields.value.length + 1
+    
+    // Load output fields - add unique IDs if not present
+    outputFields.value = (activityData.outputFields || []).map((field: any, index: number) => ({
+      id: field.id || (Date.now() + index + 1000).toString(),
+      code: field.code,
+      name: field.name || '',
+      isMultiple: field.isMultiple || false
+    }))
+    outputFieldCounter.value = outputFields.value.length + 1
+    
+    // Decode base64 code with proper UTF-8 handling
+    let decodedCode = ''
+    if (activityData.code) {
+      try {
+        // Proper UTF-8 decoding from base64
+        const binaryString = atob(activityData.code)
+        const bytes = new Uint8Array(binaryString.length)
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i)
+        }
+        decodedCode = new TextDecoder('utf-8').decode(bytes)
+      } catch (error) {
+        console.error('Error decoding base64 code:', error)
+        decodedCode = '// Ошибка декодирования кода активити'
       }
-      
-      this.emit('progress', { operation: 'deal_pipeline_stats', status: 'completed' });
-      
-      return {
-        pipelineStats: stats,
-        totalDeals: Object.values(stats).reduce((sum: number, stage: any) => sum + stage.count, 0),
-        totalValue: Object.values(stats).reduce((sum: number, stage: any) => sum + stage.totalValue, 0),
-        processingTime: Date.now() - this.startTime
-      };
-      
-    } catch (err: any) {
-      throw new Error(\`Pipeline stats failed: \${err.message}\`);
     }
+    
+    testCode.value = decodedCode
+    testInputParams.value = ''
+    testResult.value = ''
+    
+    // Store original data for change detection
+    originalData.value = {
+      title: activityTitle.value,
+      inputFields: JSON.parse(JSON.stringify(inputFields.value)),
+      outputFields: JSON.parse(JSON.stringify(outputFields.value)),
+      code: testCode.value
+    }
+    
+    // No changes initially for loaded activities
+    hasChanges.value = false
+    
+    console.log('Activity data loaded successfully:', activityData)
+    
+  } catch (error) {
+    console.error('Error loading activity data:', error)
+    
+    // Fallback to default values on error
+    activityTitle.value = `Активити #${activityId.value}`
+    inputFields.value = []
+    outputFields.value = []
+    testCode.value = '// Ошибка загрузки активити'
+    
+    // Show error message to user
+    alert(`Ошибка загрузки активити: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
+  } finally {
+    isLoading.value = false
   }
-  
-  private async syncContactsBatch(options: any): Promise<any> {
-    // Implementation for contact synchronization
-    this.emit('progress', { operation: 'sync_contacts', status: 'completed' });
-    return { synced: true, processingTime: Date.now() - this.startTime };
-  }
-}
-
-export default processBitrix24Activity;`
-  testResult.value = ''
-  
-  // Store original data for change detection
-  originalData.value = {
-    title: activityTitle.value,
-    inputFields: JSON.parse(JSON.stringify(inputFields.value)),
-    outputFields: JSON.parse(JSON.stringify(outputFields.value)),
-    code: testCode.value
-  }
-  
-  // No changes initially for existing activities
-  hasChanges.value = false
 }
 
 // Input fields management functions
@@ -1049,8 +1018,11 @@ const executeTest = async () => {
       multiple: field.isMultiple
     }))
     
-    // Encode activity code to base64
-    const activityCodeBase64 = btoa(unescape(encodeURIComponent(testCode.value)))
+    // Encode activity code to base64 with proper UTF-8 handling
+    const encoder = new TextEncoder()
+    const utf8Bytes = encoder.encode(testCode.value)
+    const binaryString = String.fromCharCode(...utf8Bytes)
+    const activityCodeBase64 = btoa(binaryString)
     
     const requestPayload = {
       inParams,
@@ -1774,26 +1746,56 @@ const saveActivity = async () => {
       return
     }
     
-    // Prepare activity data
-    const activityData = {
-      id: activityId.value,
-      title: activityTitle.value,
-      inputFields: inputFields.value,
-      outputFields: outputFields.value,
-      code: testCode.value,
-      testParams: testInputParams.value,
-      updatedAt: new Date().toISOString()
+    if (!memberId.value) {
+      alert('Ошибка: недоступен идентификатор пользователя')
+      return
     }
     
-    // TODO: Send data to backend API
-    // For now, simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Encode activity code to base64 with proper UTF-8 handling
+    const encoder = new TextEncoder()
+    const utf8Bytes = encoder.encode(testCode.value)
+    const binaryString = String.fromCharCode(...utf8Bytes)
+    const activityCodeBase64 = btoa(binaryString)
     
-    console.log('Saving activity data:', activityData)
+    // Prepare activity data in the same structure as the API response
+    const activityData = {
+      member_id: memberId.value,
+      id: activityId.value,
+      title: activityTitle.value,
+      inputFields: inputFields.value.map(field => ({
+        code: field.code,
+        name: field.name,
+        testValue: field.testValue
+      })),
+      outputFields: outputFields.value.map(field => ({
+        code: field.code,
+        name: field.name,
+        isMultiple: field.isMultiple
+      })),
+      code: activityCodeBase64
+    }
+    
+    // Send data to set-activity endpoint
+    const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/set-activity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(activityData)
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const responseData = await response.json()
+    
+    console.log('Activity saved successfully:', responseData)
     
     // Handle new activity creation
     if (activityId.value === '0') {
-      const newId = Date.now().toString()
+      // If the API returns a new ID, use it; otherwise generate one
+      const newId = responseData.id || Date.now().toString()
       console.log('Created new activity with ID:', newId)
       
       // Update last saved timestamp
@@ -1817,7 +1819,7 @@ const saveActivity = async () => {
     hasChanges.value = false
     
     // Show success message (you could use a toast notification instead)
-    alert('Активити успешно сохранено!')
+    // alert('Активити успешно сохранено!')
     
   } catch (error) {
     console.error('Error saving activity:', error)
@@ -1846,17 +1848,33 @@ const deleteActivity = async () => {
   try {
     console.log(`Удаление активити ${activityId.value}: ${activityTitle.value}`)
     
-    // TODO: Отправить запрос на удаление в backend API
-    // Пока что симулируем API вызов
-    await new Promise(resolve => setTimeout(resolve, 500))
+    if (!memberId.value) {
+      alert('Ошибка: недоступен идентификатор пользователя')
+      return
+    }
     
-    console.log('Активити успешно удалено')
+    // Send delete request to set-activity endpoint
+    const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/set-activity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        member_id: memberId.value,
+        id: activityId.value,
+        del: true
+      })
+    })
     
-    // Показать сообщение об успехе
-    alert('Активити успешно удалено!')
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const responseData = await response.json()
+    console.log('Активити успешно удалено:', responseData)
     
     // Перейти на главную страницу
-    router.push('/')
+    router.push('/app')
     
   } catch (error) {
     console.error('Ошибка при удалении активити:', error)

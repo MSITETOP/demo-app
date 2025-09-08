@@ -3,7 +3,7 @@ info:
   title: Sample API
   version: 1.0.0
 servers:
-- url: https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net
+- url: https://roborest.ipgpromo.ru
 x-yc-apigateway:
   cors:
     origin:
@@ -36,5 +36,33 @@ paths:
       x-yc-apigateway-integration:
         payload_format_version: '1.0'
         function_id: d4en1jo3phaifglc2jp8
+        tag: $latest
+        type: cloud_functions
+  /options:
+    post:
+      x-yc-apigateway-integration:
+        payload_format_version: '1.0'
+        function_id: d4eckgg16mfr6oo9n0c8
+        tag: $latest
+        type: cloud_functions
+  /get-activity:
+    post:
+      x-yc-apigateway-integration:
+        payload_format_version: '1.0'
+        function_id: d4ejslurbm1rm9c8ctj9
+        tag: $latest
+        type: cloud_functions
+  /set-activity:
+    post:
+      x-yc-apigateway-integration:
+        payload_format_version: '1.0'
+        function_id: d4e41m97e79he17428s5
+        tag: $latest
+        type: cloud_functions
+  /install:
+    post:
+      x-yc-apigateway-integration:
+        payload_format_version: '1.0'
+        function_id: d4eh41tf5cmpb54ia871
         tag: $latest
         type: cloud_functions

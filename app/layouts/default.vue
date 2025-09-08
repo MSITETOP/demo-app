@@ -19,12 +19,22 @@ const confetti = useConfetti()
 
 const isLoad = ref(false)
 const profile = ref({})
+const memberId = ref('')
+const domain = ref('')
 
 onMounted(async () => {
+  const authData = $b24.auth.getAuthData() // { access_token, refresh_token, expires_in, domain, member_id } 
+  if (authData && typeof authData === 'object') {
+    memberId.value = authData.member_id
+    domain.value = authData.domain
+    console.log(memberId.value, domain.value);
+  }
+
   initB24Helper($b24, [LoadDataType.Profile])  
   .then(data => {
     //console.log(data);
     profile.value = getB24Helper().profileInfo.data
+    console.log(profile.value);
     isLoad.value = true
   })
   .catch(error => {
@@ -63,7 +73,7 @@ onMounted(async () => {
             <p class="text-base-600">Тех. поддержка</p>
             <NuxtLink href="mailto:ka@ipgpromo.ru" target="_blank" class="text-[#3BC8F5]">ka@ipgpromo.ru</NuxtLink>
           </div>
-          <support/>
+          <support :member-id="memberId" :profile-data="profile" :domain="domain" />
         </div>
       </div>
     </div>

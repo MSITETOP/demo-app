@@ -1,5 +1,44 @@
 <script setup>
     import Chats3Icon from '@bitrix24/b24icons-vue/main/Chats3Icon';
+
+    // Получаем пропсы с данными профиля
+    const props = defineProps({
+        memberId: {
+            type: String,
+            default: ''
+        },
+        profileData: {
+            type: Object,
+            default: () => ({})
+        },
+        domain: {
+            type: String,
+            default: ''
+        }
+    })
+
+    // Формируем параметры для iframe
+    const iframeParams = computed(() => {
+        const params = new URLSearchParams()
+        if (props.memberId) {
+            params.append('member_id', props.memberId)
+        }
+        if (props.profileData.name) {
+            params.append('name', props.profileData.name)
+        }
+        if (props.profileData.lastName) {
+            params.append('last_name', props.profileData.lastName)
+        }
+        if (props.domain) {
+            params.append('domain', props.domain)
+        }
+        return params.toString()
+    })
+
+    const iframeUrl = computed(() => {
+        const baseUrl = '/ui/standalone.html'
+        return iframeParams.value ? `${baseUrl}?${iframeParams.value}` : baseUrl
+    })
 </script>
 
 <template>
@@ -11,7 +50,7 @@
             </div>
         </div>
         <template #body>
-            <iframe src="/ui/standalone.html" id="iframe-b24-form" class="w-full h-screen mt-0"></iframe>
+            <iframe :src="iframeUrl" id="iframe-b24-form" class="w-full h-screen mt-0"></iframe>
         </template>
     </B24Slideover>
 
