@@ -41,7 +41,7 @@ export default defineNuxtConfig({
   },
   
   // Configure for static deployment
-  ssr: true,
+  ssr: false,
 
   vite: {
     server: {

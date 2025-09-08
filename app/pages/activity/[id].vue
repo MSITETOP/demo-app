@@ -9,7 +9,7 @@
             ref="titleInput"
             type="text"
             v-model="activityTitle"
-            class="text-2xl font-bold text-gray-800 bg-transparent p-0 border-0 focus:outline-none focus:border-0 min-w-0 flex-1"
+            class="text-2xl font-bold text-gray-800 bg-transparent p-0 border-0 focus: min-w-0 flex-1"
             placeholder="Введите название активити"
           />
         </div>
@@ -432,7 +432,6 @@
             <div class="bg-gray-50 rounded-lg border border-gray-300 h-80 overflow-y-auto font-mono text-sm">
               <div v-if="activityLogs.length === 0" class="p-4 text-center text-gray-500">
                 <p>Логи появятся после выполнения теста</p>
-                <p class="text-sm">Нажмите "Выполнить тест" для получения логов</p>
               </div>
               
               <div v-else-if="filteredLogs.length === 0 && activeLogFilters.size > 0" class="p-4 text-center text-gray-500">

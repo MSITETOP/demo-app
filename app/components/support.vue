@@ -11,7 +11,7 @@
             </div>
         </div>
         <template #body>
-            <iframe src="/standalone.html" id="iframe-b24-form" class="w-full h-screen mt-0"></iframe>
+            <iframe src="/ui/standalone.html" id="iframe-b24-form" class="w-full h-screen mt-0"></iframe>
         </template>
     </B24Slideover>
 
