@@ -1872,13 +1872,13 @@ const saveActivity = async () => {
     await addOrUpdateBitrix24Robot()
     
     // Show success message to user
-    alert('Активити успешно сохранено')
+    // alert('Активити успешно сохранено')
     
   } catch (error) {
     console.error('Error saving activity:', error)
     
     // Show error message to user
-    alert(`Ошибка сохранения активити: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
+    // alert(`Ошибка сохранения активити: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
   } finally {
     isSaving.value = false
   }
@@ -1949,6 +1949,7 @@ const addOrUpdateBitrix24Robot = async () => {
     const robotParams = {
       CODE: activityId.value === '0' ? `activity_${Date.now()}` : `activity_${activityId.value}`, // ID активити
       HANDLER: getApiUrl('/robot'), // Адрес обработчика
+      AUTH_USER_ID: 1,
       NAME: activityTitle.value || 'Активити робот', // Название робота
       PROPERTIES: {
         // Входящие параметры
@@ -1962,7 +1963,9 @@ const addOrUpdateBitrix24Robot = async () => {
               Multiple: 'N'
             }
           ])
-        ),
+        )
+      },
+      RETURN_PROPERTIES: {
         // Исходящие параметры
         ...Object.fromEntries(
           outputFields.value.map(field => [
@@ -1989,45 +1992,44 @@ const addOrUpdateBitrix24Robot = async () => {
     // alert('Робот успешно создан в Битрикс24!')
     
   } catch (error: any) {
-    console.error('Ошибка при добавлении/обновлении робота в Битрикс24:', error)
-    
-    // Проверяем, существует ли уже такой робот
-    if (error && typeof error === 'object' && error.error_description) {
-      const errorDesc = String(error.error_description)
-      if (errorDesc.includes('already exists') || errorDesc.includes('уже существует')) {
         console.log('Робот уже существует, попытка обновления...')
         
         try {
           // Попытка обновить существующий робот
           const updateParams = {
             CODE: activityId.value === '0' ? `activity_${Date.now()}` : `activity_${activityId.value}`,
-            HANDLER: getApiUrl('/robot'),
-            NAME: activityTitle.value || 'Активити робот',
-            PROPERTIES: {
-              // Входящие параметры
-              ...Object.fromEntries(
-                inputFields.value.map(field => [
-                  field.code,
-                  {
-                    Name: field.name || field.code,
-                    Type: 'string',
-                    Required: 'N',
-                    Multiple: 'N'
-                  }
-                ])
-              ),
-              // Исходящие параметры
-              ...Object.fromEntries(
-                outputFields.value.map(field => [
-                  field.code,
-                  {
-                    Name: field.name || field.code,
-                    Type: 'string',
-                    Required: 'N',
-                    Multiple: field.isMultiple ? 'Y' : 'N'
-                  }
-                ])
-              )
+            FIELDS: {
+              HANDLER: getApiUrl('/robot'),
+              NAME: activityTitle.value || 'Активити робот',
+              AUTH_USER_ID: 1,
+              PROPERTIES: {
+                // Входящие параметры
+                ...Object.fromEntries(
+                  inputFields.value.map(field => [
+                    field.code,
+                    {
+                      Name: field.name || field.code,
+                      Type: 'string',
+                      Required: 'N',
+                      Multiple: 'N'
+                    }
+                  ])
+                )
+              },
+              RETURN_PROPERTIES: {
+                // Исходящие параметры
+                ...Object.fromEntries(
+                  outputFields.value.map(field => [
+                    field.code,
+                    {
+                      Name: field.name || field.code,
+                      Type: 'string',
+                      Required: 'N',
+                      Multiple: field.isMultiple ? 'Y' : 'N'
+                    }
+                  ])
+                )
+              }
             }
           }
           
@@ -2038,13 +2040,6 @@ const addOrUpdateBitrix24Robot = async () => {
           console.error('Ошибка при обновлении робота:', updateError)
           // Не прерываем выполнение, робот может быть не критичен для сохранения активити
         }
-      } else {
-        // Другие ошибки - просто логируем, не прерываем выполнение
-        console.warn('Не удалось создать робота в Битрикс24, но активити сохранено:', error)
-      }
-    } else {
-      console.warn('Неизвестная ошибка при работе с роботом Битрикс24:', error)
-    }
   }
 }
 
