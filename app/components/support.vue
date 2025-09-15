@@ -57,14 +57,12 @@
 </template>
 
 <style>
-    .support-widget-header {
-        margin-top: 0;
+    .sidebar-layout main, .sidebar-layout main .grow{
+        margin: 0;
+        padding: 0;
     }
     .support-widget-header .min-h-2xl {
         min-height: 0;
-    }
-    .support-widget-body {
-        margin-top: 0;
     }
     .cust-widget {
         position: relative;

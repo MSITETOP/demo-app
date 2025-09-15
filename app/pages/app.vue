@@ -39,9 +39,9 @@
           <B24Skeleton class="h-5 w-48 mb-2" />
           
           <!-- Description skeleton -->
-          <B24Skeleton class="h-4 w-full max-w-md" />
+          <B24Skeleton class="h-4 w-60" />
         </div>
-        
+
       </div>
     </div>
 

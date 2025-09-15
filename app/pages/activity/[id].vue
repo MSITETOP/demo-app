@@ -636,6 +636,29 @@ interface OutputField {
   isMultiple: boolean
 }
 
+// API response interfaces
+interface ApiActivityResponse {
+  code: string  // base64 encoded code
+  counter: number
+  id: string
+  input_params: string  // JSON string
+  member_id: string
+  name: string
+  output_params: string  // JSON string
+}
+
+interface ApiInputParam {
+  code: string
+  name: string
+  testValue: string
+}
+
+interface ApiOutputParam {
+  code: string
+  name: string
+  isMultiple: boolean
+}
+
 const route = useRoute()
 const router = useRouter()
 
@@ -763,6 +786,14 @@ onMounted(async () => {
   })
 })
 
+// Watch for route changes to reload activity data when navigating to different activity IDs
+watch(() => route.params.id, async (newId) => {
+  if (newId && memberId.value) {
+    console.log('Route changed, loading activity data for ID:', newId)
+    await loadActivityData()
+  }
+}, { immediate: false })
+
 // Watch for changes to detect if form has been modified
 watch([activityTitle, inputFields, outputFields, testCode], () => {
   checkForChanges()
@@ -787,20 +818,27 @@ const checkForChanges = () => {
 }
 
 const loadActivityData = async () => {
-  // Handle new activity creation when ID is '0'
-  if (activityId.value === '0') {
-    activityTitle.value = 'Новое активити'
+  try {
+    isLoading.value = true
     
-    // Initialize with empty fields for new activity
-    inputFields.value = []
-    fieldCounter.value = 1
+    // Clear previous logs when loading new activity
+    activityLogs.value = []
+    outputResults.value = {}
     
-    outputFields.value = []
-    outputFieldCounter.value = 1
-    
-    // Initialize with empty test data
-    testInputParams.value = ''
-    testCode.value = `// Пример активити с использованием params и logger
+    // Handle new activity creation when ID is '0'
+    if (activityId.value === '0') {
+      activityTitle.value = 'Новое активити'
+      
+      // Initialize with empty fields for new activity
+      inputFields.value = []
+      fieldCounter.value = 1
+      
+      outputFields.value = []
+      outputFieldCounter.value = 1
+      
+      // Initialize with empty test data
+      testInputParams.value = ''
+      testCode.value = `// Пример активити с использованием params и logger
 logger.info("Активити запущено");
 
 // Получение входящих параметров
@@ -827,24 +865,21 @@ try {
   logger.error("Ошибка при обработке:", error);
   throw error;
 }`
-    testResult.value = ''
-    
-    // Store original data
-    originalData.value = {
-      title: activityTitle.value,
-      inputFields: JSON.parse(JSON.stringify(inputFields.value)),
-      outputFields: JSON.parse(JSON.stringify(outputFields.value)),
-      code: testCode.value
+      testResult.value = ''
+      
+      // Store original data
+      originalData.value = {
+        title: activityTitle.value,
+        inputFields: JSON.parse(JSON.stringify(inputFields.value)),
+        outputFields: JSON.parse(JSON.stringify(outputFields.value)),
+        code: testCode.value
+      }
+      
+      // For new activities, always show changes (since it's new content)
+      hasChanges.value = true
+      
+      return
     }
-    
-    // For new activities, always show changes (since it's new content)
-    hasChanges.value = true
-    
-    return
-  }
-  
-  try {
-    isLoading.value = true
     
     if (!memberId.value) {
       throw new Error('Member ID not available')
@@ -866,23 +901,44 @@ try {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     
-    const activityData = await response.json()
+    const activityData: ApiActivityResponse = await response.json()
+    console.log('Activity data:', activityData);
     
     // Load activity data from API response
-    activityTitle.value = activityData.title || `Активити #${activityId.value}`
+    activityTitle.value = activityData.name || `Активити #${activityId.value}`
     
+    // Parse input_params from JSON string with type safety
+    let inputParamsData: ApiInputParam[] = []
+    try {
+      const parsed = JSON.parse(activityData.input_params || '[]')
+      inputParamsData = Array.isArray(parsed) ? parsed : []
+    } catch (error) {
+      console.error('Error parsing input_params:', error)
+      inputParamsData = []
+    }
+    console.log(inputParamsData);
     // Load input fields - add unique IDs if not present
-    inputFields.value = (activityData.inputFields || []).map((field: any, index: number) => ({
-      id: field.id || (Date.now() + index).toString(),
+    inputFields.value = inputParamsData.map((field: ApiInputParam, index: number) => ({
+      id: (Date.now() + index).toString(),
       code: field.code,
       name: field.name || '',
       testValue: field.testValue || ''
     }))
     fieldCounter.value = inputFields.value.length + 1
     
+    // Parse output_params from JSON string with type safety
+    let outputParamsData: ApiOutputParam[] = []
+    try {
+      const parsed = JSON.parse(activityData.output_params || '[]')
+      outputParamsData = Array.isArray(parsed) ? parsed : []
+    } catch (error) {
+      console.error('Error parsing output_params:', error)
+      outputParamsData = []
+    }
+    
     // Load output fields - add unique IDs if not present
-    outputFields.value = (activityData.outputFields || []).map((field: any, index: number) => ({
-      id: field.id || (Date.now() + index + 1000).toString(),
+    outputFields.value = outputParamsData.map((field: ApiOutputParam, index: number) => ({
+      id: (Date.now() + index + 1000).toString(),
       code: field.code,
       name: field.name || '',
       isMultiple: field.isMultiple || false
@@ -921,7 +977,14 @@ try {
     // No changes initially for loaded activities
     hasChanges.value = false
     
-    console.log('Activity data loaded successfully:', activityData)
+    console.log('Activity data loaded successfully:', {
+      id: activityData.id,
+      name: activityData.name,
+      counter: activityData.counter,
+      inputFields: inputParamsData.length,
+      outputFields: outputParamsData.length,
+      codeLength: decodedCode.length
+    })
     
   } catch (error) {
     console.error('Error loading activity data:', error)
@@ -1761,17 +1824,17 @@ const saveActivity = async () => {
     const activityData = {
       member_id: memberId.value,
       id: activityId.value,
-      title: activityTitle.value,
-      inputFields: inputFields.value.map(field => ({
+      name: activityTitle.value,  // Use 'name' instead of 'title' to match API format
+      input_params: JSON.stringify(inputFields.value.map(field => ({
         code: field.code,
         name: field.name,
         testValue: field.testValue
-      })),
-      outputFields: outputFields.value.map(field => ({
+      }))),
+      output_params: JSON.stringify(outputFields.value.map(field => ({
         code: field.code,
         name: field.name,
         isMultiple: field.isMultiple
-      })),
+      }))),
       code: activityCodeBase64
     }
     
@@ -1792,31 +1855,42 @@ const saveActivity = async () => {
     
     console.log('Activity saved successfully:', responseData)
     
+    // После сохранения активити добавляем/обновляем робота в Битрикс24
+    await addOrUpdateBitrix24Robot()
+    
     // Handle new activity creation
     if (activityId.value === '0') {
-      // If the API returns a new ID, use it; otherwise generate one
-      const newId = responseData.id || Date.now().toString()
-      console.log('Created new activity with ID:', newId)
-      
-      // Update last saved timestamp
-      lastSaved.value = new Date().toLocaleString('ru-RU')
-      
-      // Navigate to the new activity
-      await router.push(`/activity/${newId}`)
+      // Check if API returned an ID (for new activity creation)
+      if (responseData.id) {
+        const newId = responseData.id
+        console.log('Created new activity with ID:', newId)
+        
+        // Update last saved timestamp
+        lastSaved.value = new Date().toLocaleString('ru-RU')
+        
+        // Navigate to the new activity edit page
+        await router.push(`/activity/${newId}`)
+        return  // Exit early to avoid updating original data for old route
+      } else {
+        console.warn('API did not return ID for new activity')
+        alert('Активити сохранено, но ID не получен. Перезагрузите страницу.')
+      }
     } else {
       // Update last saved timestamp
       lastSaved.value = new Date().toLocaleString('ru-RU')
       console.log('Updated activity:', activityId.value)
     }
     
-    // Reset changes state and update original data
-    originalData.value = {
-      title: activityTitle.value,
-      inputFields: JSON.parse(JSON.stringify(inputFields.value)),
-      outputFields: JSON.parse(JSON.stringify(outputFields.value)),
-      code: testCode.value
+    // Reset changes state and update original data (only if we're not redirecting)
+    if (activityId.value !== '0') {
+      originalData.value = {
+        title: activityTitle.value,
+        inputFields: JSON.parse(JSON.stringify(inputFields.value)),
+        outputFields: JSON.parse(JSON.stringify(outputFields.value)),
+        code: testCode.value
+      }
+      hasChanges.value = false
     }
-    hasChanges.value = false
     
     // Show success message (you could use a toast notification instead)
     // alert('Активити успешно сохранено!')
@@ -1880,6 +1954,114 @@ const deleteActivity = async () => {
     console.error('Ошибка при удалении активити:', error)
     const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка'
     alert(`Ошибка при удалении: ${errorMessage}`)
+  }
+}
+
+// Функция для добавления или обновления робота в Битрикс24
+const addOrUpdateBitrix24Robot = async () => {
+  try {
+    console.log('Добавление/обновление робота в Битрикс24...')
+    
+    // Параметры для робота
+    const robotParams = {
+      CODE: activityId.value === '0' ? `activity_${Date.now()}` : `activity_${activityId.value}`, // ID активити
+      HANDLER: 'https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/robot', // Адрес обработчика
+      NAME: activityTitle.value || 'Активити робот', // Название робота
+      PROPERTIES: {
+        // Входящие параметры
+        ...Object.fromEntries(
+          inputFields.value.map(field => [
+            field.code,
+            {
+              Name: field.name || field.code,
+              Type: 'string',
+              Required: 'N',
+              Multiple: 'N'
+            }
+          ])
+        ),
+        // Исходящие параметры
+        ...Object.fromEntries(
+          outputFields.value.map(field => [
+            field.code,
+            {
+              Name: field.name || field.code,
+              Type: 'string',
+              Required: 'N',
+              Multiple: field.isMultiple ? 'Y' : 'N'
+            }
+          ])
+        )
+      }
+    }
+    
+    console.log('Параметры робота:', robotParams)
+    
+    // Вызов API Битрикс24 для добавления робота
+    const result = await $b24.callMethod('bizproc.robot.add', robotParams)
+    
+    console.log('Робот успешно добавлен/обновлен в Битрикс24:', result)
+    
+    // Можно добавить уведомление пользователю о успешном создании робота
+    // alert('Робот успешно создан в Битрикс24!')
+    
+  } catch (error: any) {
+    console.error('Ошибка при добавлении/обновлении робота в Битрикс24:', error)
+    
+    // Проверяем, существует ли уже такой робот
+    if (error && typeof error === 'object' && error.error_description) {
+      const errorDesc = String(error.error_description)
+      if (errorDesc.includes('already exists') || errorDesc.includes('уже существует')) {
+        console.log('Робот уже существует, попытка обновления...')
+        
+        try {
+          // Попытка обновить существующий робот
+          const updateParams = {
+            CODE: activityId.value === '0' ? `activity_${Date.now()}` : `activity_${activityId.value}`,
+            HANDLER: 'https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/robot',
+            NAME: activityTitle.value || 'Активити робот',
+            PROPERTIES: {
+              // Входящие параметры
+              ...Object.fromEntries(
+                inputFields.value.map(field => [
+                  field.code,
+                  {
+                    Name: field.name || field.code,
+                    Type: 'string',
+                    Required: 'N',
+                    Multiple: 'N'
+                  }
+                ])
+              ),
+              // Исходящие параметры
+              ...Object.fromEntries(
+                outputFields.value.map(field => [
+                  field.code,
+                  {
+                    Name: field.name || field.code,
+                    Type: 'string',
+                    Required: 'N',
+                    Multiple: field.isMultiple ? 'Y' : 'N'
+                  }
+                ])
+              )
+            }
+          }
+          
+          const updateResult = await ($b24 as any).call('bizproc.robot.update', updateParams)
+          
+          console.log('Робот успешно обновлен в Битрикс24:', updateResult)
+        } catch (updateError) {
+          console.error('Ошибка при обновлении робота:', updateError)
+          // Не прерываем выполнение, робот может быть не критичен для сохранения активити
+        }
+      } else {
+        // Другие ошибки - просто логируем, не прерываем выполнение
+        console.warn('Не удалось создать робота в Битрикс24, но активити сохранено:', error)
+      }
+    } else {
+      console.warn('Неизвестная ошибка при работе с роботом Битрикс24:', error)
+    }
   }
 }
 
