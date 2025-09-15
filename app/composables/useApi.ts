@@ -11,7 +11,7 @@ export const useApi = () => {
    */
   const getApiUrl = (endpoint: string): string => {
     // Используем URL из конфигурации
-    const baseURL = 'https://kad-arbitr.ipgpromo.ru'
+    const baseURL = 'https://roborest.ipgpromo.ru'
     
     // Убираем начальный слеш из endpoint если он есть
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
