@@ -621,10 +621,9 @@ import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import TrashcanIcon from '@bitrix24/b24icons-vue/outline/TrashcanIcon'
 import Pencil60Icon from '@bitrix24/b24icons-vue/actions/Pencil60Icon'
 import { initializeB24Frame } from '@bitrix24/b24jssdk'
-import { useApi } from '~/composables/useApi'
 
-// API configuration
-const { getApiUrl, apiPost } = useApi()
+// Get API helper
+const { getApiUrl } = useApi()
 
 interface InputField {
   id: string
@@ -1850,59 +1849,33 @@ const saveActivity = async () => {
       },
       body: JSON.stringify(activityData)
     })
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     
     const responseData = await response.json()
-    
     console.log('Activity saved successfully:', responseData)
     
-    // После сохранения активити добавляем/обновляем робота в Битрикс24
-    await addOrUpdateBitrix24Robot()
-    
-    // Handle new activity creation
-    if (activityId.value === '0') {
-      // Check if API returned an ID (for new activity creation)
-      if (responseData.id) {
-        const newId = responseData.id
-        console.log('Created new activity with ID:', newId)
-        
-        // Update last saved timestamp
-        lastSaved.value = new Date().toLocaleString('ru-RU')
-        
-        // Navigate to the new activity edit page
-        await router.push(`/activity/${newId}`)
-        return  // Exit early to avoid updating original data for old route
-      } else {
-        console.warn('API did not return ID for new activity')
-        alert('Активити сохранено, но ID не получен. Перезагрузите страницу.')
-      }
-    } else {
-      // Update last saved timestamp
-      lastSaved.value = new Date().toLocaleString('ru-RU')
-      console.log('Updated activity:', activityId.value)
+    // Update original data for change detection
+    originalData.value = {
+      title: activityTitle.value,
+      inputFields: JSON.parse(JSON.stringify(inputFields.value)),
+      outputFields: JSON.parse(JSON.stringify(outputFields.value)),
+      code: testCode.value
     }
     
-    // Reset changes state and update original data (only if we're not redirecting)
-    if (activityId.value !== '0') {
-      originalData.value = {
-        title: activityTitle.value,
-        inputFields: JSON.parse(JSON.stringify(inputFields.value)),
-        outputFields: JSON.parse(JSON.stringify(outputFields.value)),
-        code: testCode.value
-      }
-      hasChanges.value = false
-    }
+    // No changes after saving
+    hasChanges.value = false
     
-    // Show success message (you could use a toast notification instead)
-    // alert('Активити успешно сохранено!')
+    // Show success message to user
+    alert('Активити успешно сохранено')
     
   } catch (error) {
     console.error('Error saving activity:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка'
-    alert(`Ошибка при сохранении: ${errorMessage}`)
+    
+    // Show error message to user
+    alert(`Ошибка сохранения активити: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
   } finally {
     isSaving.value = false
   }

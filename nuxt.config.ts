@@ -5,15 +5,6 @@ export default defineNuxtConfig({
   // Set the source directory to 'app'
   srcDir: 'app/',
   
-  // Runtime configuration
-  runtimeConfig: {
-    // Private keys (only available on server-side)
-    // public keys (exposed to client-side)
-    public: {
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || ''
-    }
-  },
-  
   // Configure for GitHub Pages deployment
   app: {
     baseURL:  '/ui/'

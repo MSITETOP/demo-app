@@ -4,29 +4,19 @@
  * с автоматическим выбором базового URL в зависимости от окружения
  */
 export const useApi = () => {
-  const config = useRuntimeConfig()
-  
   /**
    * Создает полный URL для API запроса
    * @param endpoint - конечная точка API (например, '/eval', '/options')
    * @returns полный URL для запроса
    */
   const getApiUrl = (endpoint: string): string => {
-    // В dev окружении используем абсолютный URL, в prod - относительный
-    const baseURL = process.env.NODE_ENV === 'development' 
-      ? (config.public.apiBaseUrl || 'https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net')
-      : ''
+    // Используем URL из конфигурации
+    const baseURL = 'https://kad-arbitr.ipgpromo.ru'
     
     // Убираем начальный слеш из endpoint если он есть
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
     
-    if (baseURL) {
-      // Dev окружение - используем абсолютный URL
-      return `${baseURL}/${cleanEndpoint}`
-    } else {
-      // Prod окружение - используем относительный путь
-      return `/${cleanEndpoint}`
-    }
+    return `${baseURL}/${cleanEndpoint}`
   }
   
   /**

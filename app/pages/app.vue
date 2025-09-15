@@ -127,11 +127,9 @@ import PlusIcon from '@bitrix24/b24icons-vue/button/PlusIcon'
 import MoneyIcon from '@bitrix24/b24icons-vue/outline/MoneyIcon'
 import { initializeB24Frame } from '@bitrix24/b24jssdk'
 
-// Import API composable explicitly
-import { useApi } from '~/composables/useApi'
+// Get API helper
+const { getApiUrl } = useApi()
 
-// Import API composable
-// const { apiFetch, apiPost } = useApi()
 interface Activity {
   id: string
   name: string
@@ -195,20 +193,22 @@ const loadActivities = async () => {
       throw new Error('Member ID not available')
     }
     
-    const { apiFetch } = useApi()
-    const data = await apiFetch<ApiResponse>('/options', {
-      member_id: memberId.value
+    const data = await $fetch<ApiResponse>(getApiUrl('/options'), {
+      method: 'POST',
+      body: {
+        member_id: memberId.value
+      }
     })
     
     // Transform API data to our Activity interface
-    activities.value = data.activities.map((item: any, index: number) => ({
+    activities.value = data.activities.map((item, index) => ({
       id: item.id,
       name: item.name,
       usage: item.usage
     }))
     
     // Calculate tariff information
-    const totalUsed = data.activities.reduce((sum: number, activity: any) => sum + activity.usage, 0)
+    const totalUsed = data.activities.reduce((sum, activity) => sum + activity.usage, 0)
     tariffInfo.value = {
       limit: data.limit,
       used: totalUsed,
@@ -241,13 +241,25 @@ const deleteActivity = (id: string) => {
     // Make POST request to delete the activity
     const deleteActivityAPI = async () => {
       try {
-        const { apiPost } = useApi()
-        const responseData = await apiPost('/set-activity', {
-          member_id: memberId.value,
-          id: id,
-          del: true
+        // Use the member_id from auth data
+        
+        const response = await fetch(getApiUrl('/set-activity'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            member_id: memberId.value,
+            id: id,
+            del: true
+          })
         })
         
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const responseData = await response.json()
         console.log('Activity deleted successfully:', responseData)
         
         // Remove from local array after successful API call
