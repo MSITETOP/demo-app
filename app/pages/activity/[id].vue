@@ -621,6 +621,10 @@ import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import TrashcanIcon from '@bitrix24/b24icons-vue/outline/TrashcanIcon'
 import Pencil60Icon from '@bitrix24/b24icons-vue/actions/Pencil60Icon'
 import { initializeB24Frame } from '@bitrix24/b24jssdk'
+import { useApi } from '~/composables/useApi'
+
+// API configuration
+const { getApiUrl, apiPost } = useApi()
 
 interface InputField {
   id: string
@@ -886,7 +890,7 @@ try {
     }
     
     // Make POST request to get-activity endpoint
-    const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/get-activity', {
+    const response = await fetch(getApiUrl('/get-activity'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -1096,7 +1100,7 @@ const executeTest = async () => {
     // Make POST request to Yandex Cloud Function
     addLog('INFO', 'Отправка запроса на сервер', '📤')
     
-    const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/eval', {
+    const response = await fetch(getApiUrl('/eval'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -1839,7 +1843,7 @@ const saveActivity = async () => {
     }
     
     // Send data to set-activity endpoint
-    const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/set-activity', {
+    const response = await fetch(getApiUrl('/set-activity'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -1931,7 +1935,7 @@ const deleteActivity = async () => {
     await deleteBitrix24Robot()
     
     // Send delete request to set-activity endpoint
-    const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/set-activity', {
+    const response = await fetch(getApiUrl('/set-activity'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -1968,7 +1972,7 @@ const addOrUpdateBitrix24Robot = async () => {
     // Параметры для робота
     const robotParams = {
       CODE: activityId.value === '0' ? `activity_${Date.now()}` : `activity_${activityId.value}`, // ID активити
-      HANDLER: 'https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/robot', // Адрес обработчика
+      HANDLER: getApiUrl('/robot'), // Адрес обработчика
       NAME: activityTitle.value || 'Активити робот', // Название робота
       PROPERTIES: {
         // Входящие параметры
@@ -2021,7 +2025,7 @@ const addOrUpdateBitrix24Robot = async () => {
           // Попытка обновить существующий робот
           const updateParams = {
             CODE: activityId.value === '0' ? `activity_${Date.now()}` : `activity_${activityId.value}`,
-            HANDLER: 'https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/robot',
+            HANDLER: getApiUrl('/robot'),
             NAME: activityTitle.value || 'Активити робот',
             PROPERTIES: {
               // Входящие параметры
