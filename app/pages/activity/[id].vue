@@ -1828,16 +1828,16 @@ const saveActivity = async () => {
       member_id: memberId.value,
       id: activityId.value,
       name: activityTitle.value,  // Use 'name' instead of 'title' to match API format
-      input_params: JSON.stringify(inputFields.value.map(field => ({
+      input_params: inputFields.value.map(field => ({
         code: field.code,
         name: field.name,
         testValue: field.testValue
-      }))),
-      output_params: JSON.stringify(outputFields.value.map(field => ({
+      })),
+      output_params: outputFields.value.map(field => ({
         code: field.code,
         name: field.name,
         isMultiple: field.isMultiple
-      }))),
+      })),
       code: activityCodeBase64
     }
     
