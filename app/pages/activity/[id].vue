@@ -1927,6 +1927,9 @@ const deleteActivity = async () => {
       return
     }
     
+    // Сначала удаляем робота из Битрикс24
+    await deleteBitrix24Robot()
+    
     // Send delete request to set-activity endpoint
     const response = await fetch('https://d5dfibnvjutmk39e6uao.yl4tuxdu.apigw.yandexcloud.net/set-activity', {
       method: 'POST',
@@ -2048,7 +2051,7 @@ const addOrUpdateBitrix24Robot = async () => {
             }
           }
           
-          const updateResult = await ($b24 as any).call('bizproc.robot.update', updateParams)
+          const updateResult = await $b24.callMethod('bizproc.robot.update', updateParams)
           
           console.log('Робот успешно обновлен в Битрикс24:', updateResult)
         } catch (updateError) {
@@ -2061,6 +2064,38 @@ const addOrUpdateBitrix24Robot = async () => {
       }
     } else {
       console.warn('Неизвестная ошибка при работе с роботом Битрикс24:', error)
+    }
+  }
+}
+
+// Функция для удаления робота из Битрикс24
+const deleteBitrix24Robot = async () => {
+  try {
+    console.log('Удаление робота из Битрикс24...')
+    
+    const robotCode = `activity_${activityId.value}`
+    
+    // Пытаемся удалить робота по коду
+    await $b24.callMethod('bizproc.robot.delete', {
+      CODE: robotCode
+    })
+    
+    console.log('Робот успешно удален из Битрикс24:', robotCode)
+    
+  } catch (error: any) {
+    console.error('Ошибка при удалении робота из Битрикс24:', error)
+    
+    // Проверяем, существует ли робот вообще
+    if (error && typeof error === 'object' && error.error_description) {
+      const errorDesc = String(error.error_description)
+      if (errorDesc.includes('not found') || errorDesc.includes('не найден') || errorDesc.includes('does not exist')) {
+        console.log('Робот не найден, возможно он уже был удален')
+      } else {
+        // Другие ошибки - просто логируем, не прерываем выполнение
+        console.warn('Не удалось удалить робота из Битрикс24, но продолжаем удаление активити:', error)
+      }
+    } else {
+      console.warn('Неизвестная ошибка при удалении робота Битрикс24:', error)
     }
   }
 }
