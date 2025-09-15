@@ -1868,6 +1868,9 @@ const saveActivity = async () => {
     // No changes after saving
     hasChanges.value = false
     
+    // После успешного сохранения активити, добавляем/обновляем робота в Битрикс24
+    await addOrUpdateBitrix24Robot()
+    
     // Show success message to user
     alert('Активити успешно сохранено')
     
