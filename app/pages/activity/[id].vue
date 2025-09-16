@@ -1951,6 +1951,7 @@ const addOrUpdateBitrix24Robot = async () => {
       HANDLER: getApiUrl('/robot'), // Адрес обработчика
       AUTH_USER_ID: 1,
       NAME: activityTitle.value || 'Активити робот', // Название робота
+      USE_SUBSCRIPTION: 'Y',
       PROPERTIES: {
         // Входящие параметры
         ...Object.fromEntries(
@@ -1966,6 +1967,12 @@ const addOrUpdateBitrix24Robot = async () => {
         )
       },
       RETURN_PROPERTIES: {
+        'logs': {
+          Name: 'Логи выполнения',
+          Type: 'string',
+          Required: 'N',
+          Multiple: 'Y'
+        },
         // Исходящие параметры
         ...Object.fromEntries(
           outputFields.value.map(field => [
@@ -2002,6 +2009,7 @@ const addOrUpdateBitrix24Robot = async () => {
               HANDLER: getApiUrl('/robot'),
               NAME: activityTitle.value || 'Активити робот',
               AUTH_USER_ID: 1,
+              USE_SUBSCRIPTION: 'Y',
               PROPERTIES: {
                 // Входящие параметры
                 ...Object.fromEntries(
@@ -2017,6 +2025,12 @@ const addOrUpdateBitrix24Robot = async () => {
                 )
               },
               RETURN_PROPERTIES: {
+                'logs': {
+                  Name: 'Логи выполнения',
+                  Type: 'string',
+                  Required: 'N',
+                  Multiple: 'Y'
+                },
                 // Исходящие параметры
                 ...Object.fromEntries(
                   outputFields.value.map(field => [
