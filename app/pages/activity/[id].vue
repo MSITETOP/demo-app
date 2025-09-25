@@ -1452,6 +1452,11 @@ const saveActivity = async () => {
     const responseData = await response.json()
     console.log('Activity saved successfully:', responseData)
     
+    if (activityId.value === '0' && responseData.id) {
+      router.push(`/activity/${responseData.id.toString()}`)
+      return
+    }
+
     // Update original data for change detection
     originalData.value = {
       title: activityTitle.value,
