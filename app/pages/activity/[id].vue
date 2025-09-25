@@ -332,7 +332,7 @@
               <VueMonacoEditor
                 v-model:value="testCode"
                 theme="vs"
-                language="typescript"
+                language="python"
                 :options="{
                   automaticLayout: true,
                   fontSize: 14,
@@ -343,7 +343,7 @@
                   lineNumbers: 'on',
                   formatOnPaste: true,
                   formatOnType: true,
-                  tabSize: 2,
+                  tabSize: 4,
                   insertSpaces: true,
                   folding: true,
                   autoIndent: 'full',
@@ -378,6 +378,39 @@
                   guides: {
                     bracketPairs: true,
                     indentation: true
+                  },
+                  // Enhanced Python-specific settings
+                  suggest: {
+                    showKeywords: true,
+                    showSnippets: true,
+                    showClasses: true,
+                    showFunctions: true,
+                    showVariables: true,
+                    showModules: true,
+                    showProperties: true,
+                    showEvents: true,
+                    showOperators: true,
+                    showUnits: true,
+                    showValues: true,
+                    showConstants: true,
+                    showEnums: true,
+                    showEnumMembers: true,
+                    showInterfaces: true,
+                    showStructs: true,
+                    showTypeParameters: true,
+                    showColors: true,
+                    showFiles: true,
+                    showReferences: true,
+                    showFolders: true,
+                    showUsers: true,
+                    showIssues: true
+                  },
+                  // Python-specific editor settings
+                  autoClosingBrackets: 'languageDefined',
+                  autoClosingQuotes: 'languageDefined',
+                  autoSurround: 'languageDefined',
+                  smartSelect: {
+                    selectLeadingAndTrailingWhitespace: true
                   }
                 }"
                 class="border border-gray-300 rounded-md"
@@ -621,9 +654,11 @@ import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import TrashcanIcon from '@bitrix24/b24icons-vue/outline/TrashcanIcon'
 import Pencil60Icon from '@bitrix24/b24icons-vue/actions/Pencil60Icon'
 import { initializeB24Frame } from '@bitrix24/b24jssdk'
+import { usePythonMonaco } from '~/composables/usePythonMonaco'
 
 // Get API helper
 const { getApiUrl } = useApi()
+const { configurePythonEditor } = usePythonMonaco()
 
 interface InputField {
   id: string
@@ -756,6 +791,7 @@ const isLoading = ref(false)
 const lastSaved = ref('')
 const hasChanges = ref(false)
 const memberId = ref<string>('')
+const authData = ref<any>(null)
 
 // Initialize Bitrix24 frame and get member_id
 const $b24 = await initializeB24Frame()
@@ -771,9 +807,10 @@ const originalData = ref({
 // Load activity data on mount
 onMounted(async () => {
   // Get member_id from auth data
-  const authData = $b24.auth.getAuthData()
-  if (authData && typeof authData === 'object') {
-    memberId.value = authData.member_id
+  const authDataObj = $b24.auth.getAuthData()
+  authData.value = authDataObj
+  if (authDataObj && typeof authDataObj === 'object') {
+    memberId.value = authDataObj.member_id
   }
   
   if (memberId.value) {
@@ -784,8 +821,9 @@ onMounted(async () => {
   }
   
   // Configure Monaco Editor for enhanced JavaScript experience
-  nextTick(() => {
-    configureMonacoEditor()
+  nextTick(async () => {
+    // Initialize Python-specific Monaco Editor features
+    await configurePythonEditor()
   })
 })
 
@@ -841,33 +879,32 @@ const loadActivityData = async () => {
       
       // Initialize with empty test data
       testInputParams.value = ''
-      testCode.value = `// Пример активити с использованием params и logger
-logger.info("Активити запущено");
+      testCode.value = `# Пример активити с использованием params и logger
+logger.info("Активити запущено")
 
-// Получение входящих параметров
-const input1 = params["field_input_1"];
-const input2 = params["field_input_2"];
+# Получение входящих параметров
+input1 = params.get("field_input_1")
+input2 = params.get("field_input_2")
 
-logger.debug("Входящие параметры:", { input1, input2 });
+logger.debug("Входящие параметры: input1={}, input2={}".format(input1, input2))
 
-// Обработка данных
-try {
-  // Простые вычисления для демонстрации
-  const sum = Number(input1) + Number(input2);
-  const product = Number(input1) * Number(input2);
-  
-  logger.info("Вычисления выполнены", { sum, product });
-  
-  // Установка исходящих параметров
-  params["field_output_1"] = [sum];
-  params["field_output_2"] = [product];
-  
-  logger.info("Обработка завершена успешно");
-  
-} catch (error) {
-  logger.error("Ошибка при обработке:", error);
-  throw error;
-}`
+# Обработка данных
+try:
+    # Простые вычисления для демонстрации
+    sum_result = float(input1 or 0) + float(input2 or 0)
+    product_result = float(input1 or 0) * float(input2 or 0)
+    
+    logger.info("Вычисления выполнены: sum={}, product={}".format(sum_result, product_result))
+    
+    # Установка исходящих параметров (в виде списков)
+    params["field_output_1"] = [sum_result]
+    params["field_output_2"] = [product_result]
+    
+    logger.info("Обработка завершена успешно")
+    
+except Exception as error:
+    logger.error("Ошибка при обработке: {}".format(str(error)))
+    raise error`
       testResult.value = ''
       
       // Store original data
@@ -961,11 +998,11 @@ try {
         decodedCode = new TextDecoder('utf-8').decode(bytes)
       } catch (error) {
         console.error('Error decoding base64 code:', error)
-        decodedCode = '// Ошибка декодирования кода активити'
+        decodedCode = '# Ошибка декодирования кода активити'
       }
     }
     
-    testCode.value = decodedCode
+    testCode.value = decodedCode || '# Новый скрипт Python'
     testInputParams.value = ''
     testResult.value = ''
     
@@ -1093,7 +1130,10 @@ const executeTest = async () => {
     const requestPayload = {
       inParams,
       outParams,
-      activityCode: activityCodeBase64
+      activityCode: activityCodeBase64,
+      memberId: authData.value?.member_id || '',
+      accessToken: authData.value?.access_token || '',
+      domain: authData.value?.domain || ''
     }
     
     // Make POST request to Yandex Cloud Function
@@ -1354,451 +1394,6 @@ const cancelEdit = () => {
 
 const goBack = () => {
   router.push('/')
-}
-
-// Configure Monaco Editor for enhanced JavaScript experience
-const configureMonacoEditor = () => {
-  if (typeof window !== 'undefined' && (window as any).monaco) {
-    const monaco = (window as any).monaco
-    
-    // Register custom JavaScript snippets
-    monaco.languages.registerCompletionItemProvider('typescript', {
-      provideCompletionItems: (model: any, position: any) => {
-        const suggestions = [
-          {
-            label: 'activity-basic-template',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              '// Базовый шаблон активити с работой с params и logger',
-              'logger.info("Активити запущено");',
-              '',
-              '// Получение входящих параметров',
-              'const input1 = params["field_input_1"];',
-              'const input2 = params["field_input_2"];',
-              '',
-              'logger.debug("Входящие параметры:", { input1, input2 });',
-              '',
-              '// Обработка данных',
-              'try {',
-              '\tconst result1 = ${1:input1 + input2};',
-              '\tconst result2 = ${2:input1 * input2};',
-              '\t',
-              '\t// Установка исходящих параметров',
-              '\tparams["field_output_1"] = [result1];',
-              '\tparams["field_output_2"] = [result2];',
-              '\t',
-              '\tlogger.info("Обработка завершена успешно");',
-              '} catch (error) {',
-              '\tlogger.error("Ошибка при обработке:", error);',
-              '\tthrow error;',
-              '}'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Базовый шаблон активити с работой с входящими и исходящими параметрами'
-          },
-          {
-            label: 'params-get-input',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              '// Получение входящих параметров',
-              'const ${1:paramName} = params["${2:field_input_1}"];',
-              'logger.debug("Получен параметр ${1:paramName}:", ${1:paramName});'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Получение входящего параметра с логированием'
-          },
-          {
-            label: 'params-set-output',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              '// Установка исходящего параметра',
-              'params["${1:field_output_1}"] = [${2:value}];',
-              'logger.info("Установлен исходящий параметр ${1:field_output_1}:", ${2:value});'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Установка исходящего параметра с логированием'
-          },
-          {
-            label: 'logger-all-levels',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              '// Логирование на всех уровнях',
-              'logger.debug("${1:Отладочная информация}", ${2:data});',
-              'logger.info("${3:Информационное сообщение}");',
-              'logger.warn("${4:Предупреждение}");',
-              'logger.error("${5:Ошибка}:", ${6:error});',
-              'logger.fatal("${7:Критическая ошибка}");'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Примеры логирования на всех доступных уровнях'
-          },
-          {
-            label: 'activity-with-bitrix24',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              '// Активити с интеграцией Bitrix24',
-              'import { B24Hook } from \'@bitrix24/b24jssdk\';',
-              '',
-              'logger.info("Запуск активити с Bitrix24 интеграцией");',
-              '',
-              '// Получение параметров',
-              'const webhookUrl = params["field_input_1"] || "https://your_domain.bitrix24.com/rest/1/xxxx/";',
-              'const operation = params["field_input_2"] || "crm.deal.list";',
-              '',
-              'logger.debug("Параметры Bitrix24:", { webhookUrl, operation });',
-              '',
-              'try {',
-              '\t// Инициализация Bitrix24 Hook',
-              '\tconst b24 = B24Hook.fromWebhookUrl(webhookUrl);',
-              '\tlogger.info("Bitrix24 Hook инициализирован");',
-              '\t',
-              '\t// Выполнение запроса',
-              '\tconst result = await b24.call(operation, {',
-              '\t\torder: { DATE_CREATE: "DESC" },',
-              '\t\tlimit: 50',
-              '\t});',
-              '\t',
-              '\tlogger.info(`Получено ${result.result?.length || 0} записей`);',
-              '\t',
-              '\t// Установка результата',
-              '\tparams["field_output_1"] = [JSON.stringify(result.result)];',
-              '\tparams["field_output_2"] = [`Операция ${operation} выполнена успешно`];',
-              '\t',
-              '\tlogger.info("Активити выполнено успешно");',
-              '',
-              '} catch (error) {',
-              '\tlogger.error("Ошибка выполнения активити:", error);',
-              '\tparams["field_output_1"] = [""];',
-              '\tparams["field_output_2"] = [`Ошибка: ${error.message}`];',
-              '\tthrow error;',
-              '}'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Полный шаблон активити с Bitrix24 интеграцией, логированием и обработкой ошибок'
-          },
-          {
-            label: 'nodejs-async-function',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              'async function ${1:functionName}(${2:params}: any): Promise<any> {',
-              '\ttry {',
-              '\t\tconsole.log("Starting ${1:functionName}...");',
-              '\t\t${3:// Your Node.js code here}',
-              '\t\treturn ${4:result};',
-              '\t} catch (error: any) {',
-              '\t\tconsole.error("Error in ${1:functionName}:", error);',
-              '\t\tthrow error;',
-              '\t}',
-              '}'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Node.js async function template with TypeScript types and error handling'
-          },
-          {
-            label: 'nodejs-file-operation',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              'import { promises as fs } from \'fs\';',
-              'import path from \'path\';',
-              '',
-              'async function ${1:fileOperation}(filePath: string, data: any): Promise<any> {',
-              '\ttry {',
-              '\t\tconst safePath = path.resolve(process.cwd(), filePath);',
-              '\t\t',
-              '\t\t// Read file',
-              '\t\tconst content = await fs.readFile(safePath, \'utf8\');',
-              '\t\tconst parsedData = JSON.parse(content);',
-              '\t\t',
-              '\t\t// Process data',
-              '\t\tconst result = { ...parsedData, ...data };',
-              '\t\t',
-              '\t\t// Write back',
-              '\t\tawait fs.writeFile(safePath, JSON.stringify(result, null, 2));',
-              '\t\t',
-              '\t\treturn { success: true, filePath: safePath };',
-              '\t} catch (error: any) {',
-              '\t\tthrow new Error(`File operation failed: ${error.message}`);',
-              '\t}',
-              '}'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Node.js file system operation template with fs/promises'
-          },
-          {
-            label: 'nodejs-http-request',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              'import https from \'https\';',
-              '',
-              'function ${1:makeRequest}(url: string, data: any): Promise<any> {',
-              '\treturn new Promise((resolve, reject) => {',
-              '\t\tconst postData = JSON.stringify(data);',
-              '\t\tconst urlObj = new URL(url);',
-              '\t\t',
-              '\t\tconst options = {',
-              '\t\t\thostname: urlObj.hostname,',
-              '\t\t\tport: urlObj.port || 443,',
-              '\t\t\tpath: urlObj.pathname + urlObj.search,',
-              '\t\t\tmethod: \'POST\',',
-              '\t\t\theaders: {',
-              '\t\t\t\t\'Content-Type\': \'application/json\',',
-              '\t\t\t\t\'Content-Length\': Buffer.byteLength(postData)',
-              '\t\t\t}',
-              '\t\t};',
-              '\t\t',
-              '\t\tconst req = https.request(options, (res) => {',
-              '\t\t\tlet responseData = \'\';',
-              '\t\t\tres.on(\'data\', (chunk) => responseData += chunk);',
-              '\t\t\tres.on(\'end\', () => {',
-              '\t\t\t\ttry {',
-              '\t\t\t\t\tresolve(JSON.parse(responseData));',
-              '\t\t\t\t} catch {',
-              '\t\t\t\t\tresolve(responseData);',
-              '\t\t\t\t}',
-              '\t\t\t});',
-              '\t\t});',
-              '\t\t',
-              '\t\treq.on(\'error\', reject);',
-              '\t\treq.write(postData);',
-              '\t\treq.end();',
-              '\t});',
-              '}'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Node.js HTTPS request template using native modules'
-          },
-          {
-            label: 'nodejs-class-template',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              'import { EventEmitter } from \'events\';',
-              '',
-              'class ${1:ClassName} extends EventEmitter {',
-              '\tprivate ${2:property}: ${3:string};',
-              '\t',
-              '\tconstructor(${4:param}: ${5:string}) {',
-              '\t\tsuper();',
-              '\t\tthis.${2:property} = ${4:param};',
-              '\t}',
-              '\t',
-              '\tasync ${6:methodName}(${7:param}: any): Promise<any> {',
-              '\t\ttry {',
-              '\t\t\tthis.emit(\'progress\', { status: \'started\' });',
-              '\t\t\t${8:// Your implementation}',
-              '\t\t\tthis.emit(\'progress\', { status: \'completed\' });',
-              '\t\t\treturn ${9:result};',
-              '\t\t} catch (error) {',
-              '\t\t\tthis.emit(\'error\', error);',
-              '\t\t\tthrow error;',
-              '\t\t}',
-              '\t}',
-              '}',
-              '',
-              'export default ${1:ClassName};'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Node.js class template extending EventEmitter with TypeScript'
-          },
-          {
-            label: 'nodejs-activity-template',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              '// Node.js Bitrix24 Activity Template',
-              'import { promisify } from \'util\';',
-              '',
-              'interface ActivityInput {',
-              '\tuserId: number;',
-              '\toperation: string;',
-              '\tpayload?: any;',
-              '}',
-              '',
-              'interface ActivityResult {',
-              '\tstatus: \'success\' | \'error\';',
-              '\tmessage: string;',
-              '\tdata?: any;',
-              '\terror?: string;',
-              '}',
-              '',
-              'async function ${1:activityName}(input: ActivityInput): Promise<ActivityResult> {',
-              '\tconsole.log("Node.js activity started:", input);',
-              '\t',
-              '\ttry {',
-              '\t\tconst { userId, operation, payload = {} } = input;',
-              '\t\t',
-              '\t\t// Validate input',
-              '\t\tif (!userId || !operation) {',
-              '\t\t\tthrow new Error(\'Missing required parameters\');',
-              '\t\t}',
-              '\t\t',
-              '\t\t// Process operation',
-              '\t\tconst result = await processOperation(operation, payload);',
-              '\t\t',
-              '\t\treturn {',
-              '\t\t\tstatus: \'success\',',
-              '\t\t\tmessage: \'Activity completed successfully\',',
-              '\t\t\tdata: result',
-              '\t\t};',
-              '\t\t',
-              '\t} catch (error: any) {',
-              '\t\tconsole.error("Activity failed:", error);',
-              '\t\treturn {',
-              '\t\t\tstatus: \'error\',',
-              '\t\t\tmessage: error.message,',
-              '\t\t\terror: error.stack',
-              '\t\t};',
-              '\t}',
-              '}',
-              '',
-              'async function processOperation(operation: string, payload: any): Promise<any> {',
-              '\t${2:// Implement your operation logic here}',
-              '\treturn { operation, payload, processedAt: Date.now() };',
-              '}',
-              '',
-              'export default ${1:activityName};'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Complete Node.js Bitrix24 activity template with TypeScript interfaces'
-          },
-          {
-            label: 'bitrix24-hook-init',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              'import { B24Hook } from \'@bitrix24/b24jssdk\';',
-              '',
-              'const b24 = B24Hook.fromWebhookUrl(\'https://your_domain.bitrix24.com/rest/1/xxxx/\');',
-              '',
-              'try {',
-              '\tconst result = await b24.call(\'${1:crm.deal.list}\', {',
-              '\t\torder: { DATE_CREATE: \'DESC\' },',
-              '\t\tfilter: { ${2:STAGE_ID: \'NEW\'} },',
-              '\t\tselect: [${3:\'ID\', \'TITLE\', \'STAGE_ID\', \'DATE_CREATE\'}]',
-              '\t});',
-              '',
-              '\tconsole.log(\'Результат:\', result);',
-              '\treturn result;',
-              '} catch (err) {',
-              '\tconsole.error(\'Ошибка при выполнении запроса:\', err.message);',
-              '\tthrow err;',
-              '}'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Bitrix24 SDK initialization and basic API call template'
-          },
-          {
-            label: 'bitrix24-batch-call',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              'import { B24Hook } from \'@bitrix24/b24jssdk\';',
-              '',
-              'const b24 = B24Hook.fromWebhookUrl(\'https://your_domain.bitrix24.com/rest/1/xxxx/\');',
-              '',
-              '// Batch operations for better performance',
-              'const batch = {',
-              '\t${1:deals}: [\'crm.deal.list\', {',
-              '\t\torder: { DATE_CREATE: \'DESC\' },',
-              '\t\tfilter: { STAGE_ID: \'NEW\' },',
-              '\t\tselect: [\'ID\', \'TITLE\', \'STAGE_ID\'],',
-              '\t\tlimit: 50',
-              '\t}],',
-              '\t${2:contacts}: [\'crm.contact.list\', {',
-              '\t\torder: { DATE_CREATE: \'DESC\' },',
-              '\t\tselect: [\'ID\', \'NAME\', \'LAST_NAME\', \'EMAIL\'],',
-              '\t\tlimit: 50',
-              '\t}]',
-              '};',
-              '',
-              'try {',
-              '\tconst batchResult = await b24.callBatch(batch);',
-              '\tconsole.log(\'Batch results:\', batchResult);',
-              '\treturn batchResult;',
-              '} catch (err) {',
-              '\tconsole.error(\'Ошибка batch операции:\', err.message);',
-              '\tthrow err;',
-              '}'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Bitrix24 batch API call template for multiple operations'
-          },
-          {
-            label: 'bitrix24-crm-operation',
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertText: [
-              'import { B24Hook } from \'@bitrix24/b24jssdk\';',
-              '',
-              'async function ${1:crmOperation}(b24: any, ${2:entityId}: string, ${3:data}: any): Promise<any> {',
-              '\ttry {',
-              '\t\t// ${4:Create/Update/Delete} CRM entity',
-              '\t\tconst result = await b24.call(\'${5:crm.deal.update}\', {',
-              '\t\t\tid: ${2:entityId},',
-              '\t\t\tfields: {',
-              '\t\t\t\t...${3:data},',
-              '\t\t\t\tDATE_MODIFY: new Date().toISOString()',
-              '\t\t\t}',
-              '\t\t});',
-              '',
-              '\t\tconsole.log(\'CRM operation result:\', result);',
-              '',
-              '\t\treturn {',
-              '\t\t\tstatus: \'success\',',
-              '\t\t\tmessage: \'Operation completed successfully\',',
-              '\t\t\tdata: result.result',
-              '\t\t};',
-              '',
-              '\t} catch (error: any) {',
-              '\t\tconsole.error(\'CRM operation error:\', error.message);',
-              '\t\treturn {',
-              '\t\t\tstatus: \'error\',',
-              '\t\t\tmessage: error.message,',
-              '\t\t\tcode: error.code || \'CRM_ERROR\'',
-              '\t\t};',
-              '\t}',
-              '}'
-            ].join('\n'),
-            insertTextFormat: monaco.languages.CompletionItemInsertTextFormat.Snippet,
-            documentation: 'Bitrix24 CRM operation template with error handling'
-          }
-        ];
-        
-        return { suggestions };
-      }
-    });
-    
-    // Configure JavaScript language features
-    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.ES2020,
-      lib: ['ES2020', 'DOM'],
-      allowNonTsExtensions: true,
-      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      module: monaco.languages.typescript.ModuleKind.CommonJS,
-      noEmit: true,
-      esModuleInterop: true,
-      allowSyntheticDefaultImports: true,
-      allowJs: true,
-      strict: false,
-      noImplicitAny: false,
-      skipLibCheck: true,
-      resolveJsonModule: true,
-      typeRoots: ["node_modules/@types", "node_modules/@types/node"]
-    });
-    
-    // Add common JavaScript libraries and APIs
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      `
-      // Activity Context - Global variables available in activity code
-      declare var params: {
-        [key: string]: any;
-      };
-      
-      declare var logger: {
-        debug(message: string): void;
-        info(message: string): void;
-        warn(message: string): void;
-        error(message: string): void;
-      };
-      `,
-      'node-globals.d.ts'
-    );
-  }
 }
 
 // Save activity function
