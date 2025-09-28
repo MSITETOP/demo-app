@@ -27,14 +27,14 @@ onMounted(async () => {
   if (authData && typeof authData === 'object') {
     memberId.value = authData.member_id
     domain.value = authData.domain
-    console.log(memberId.value, domain.value);
+    // console.log(memberId.value, domain.value);
   }
 
   initB24Helper($b24, [LoadDataType.Profile])  
   .then(data => {
     //console.log(data);
     profile.value = getB24Helper().profileInfo.data
-    console.log(profile.value);
+    // console.log(profile.value);
     isLoad.value = true
   })
   .catch(error => {
