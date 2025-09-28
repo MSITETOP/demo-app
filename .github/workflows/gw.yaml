@@ -1,0 +1,23 @@
+name: Deploy API Gateway
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apigw/apigw.yaml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy API Gateway
+        id: deploy-gateway
+        uses: yc-actions/yc-api-gateway-deploy@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          gateway-name: roborest
+          folder-id: b1gcfvr4j5v19q1pbtav
+          spec-file: apigw.yaml
