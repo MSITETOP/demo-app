@@ -35,4 +35,6 @@ jobs:
           bucket: roborest-ui
           root: .output/public
           prefix: ui
+          include: |
+            *
           clear: true
