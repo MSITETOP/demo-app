@@ -13,6 +13,7 @@
     </div>
 
     <!-- Tariff Information Alert -->
+    <!---
     <B24Alert 
       v-if="!isLoading && !error"
       color="air-secondary-accent-2"
@@ -27,6 +28,7 @@
       }]"
       class="mb-6"
     />
+    -->
 
     <!-- Tariff Skeleton -->
     <div v-if="isLoading" class="mb-6 bg-white rounded-lg border border-gray-200 p-4">
