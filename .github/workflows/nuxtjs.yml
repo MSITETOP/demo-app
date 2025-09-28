@@ -27,15 +27,12 @@ jobs:
       - name: Export static files
         run: npm run generate
 
-      - name: Sync to Yandex S3
-        uses: jakejarvis/s3-sync-action@master
+      - name: Upload files to Object Storage
+        id: s3-upload
+        uses: yc-actions/yc-obj-storage-upload@v3
         with:
-          args: --delete --exact-timestamps
-        env:
-          AWS_S3_BUCKET: roborest-ui
-          AWS_ACCESS_KEY_ID: ${{ secrets.YC_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET }}
-          AWS_REGION: ru-central1
-          SOURCE_DIR: .output/public
-          DEST_DIR: ui
-          ENDPOINT_URL: https://storage.yandexcloud.net
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          bucket: roborest-ui
+          root: .output/public
+          prefix: ui
+          clear: true
