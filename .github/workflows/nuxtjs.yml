@@ -37,4 +37,5 @@ jobs:
           prefix: ui
           include: |
             *
+            **/*
           clear: true
