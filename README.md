@@ -1,4 +1,4 @@
-# День X
+# RoboREST
 
 Look at docs to learn more:
 
