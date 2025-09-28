@@ -20,4 +20,4 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           gateway-name: roborest
           folder-id: b1gcfvr4j5v19q1pbtav
-          spec-file: apigw.yaml
+          spec-file: apigw/apigw.yaml
