@@ -842,7 +842,7 @@ watch([activityTitle, inputFields, outputFields, testCode], () => {
 
 // Additional watch specifically for the title input
 watch(activityTitle, (newTitle, oldTitle) => {
-  console.log('Title changed:', { oldTitle, newTitle })
+  // console.log('Title changed:', { oldTitle, newTitle })
   checkForChanges()
 })
 
@@ -942,7 +942,7 @@ except Exception as error:
     }
     
     const activityData: ApiActivityResponse = await response.json()
-    console.log('Activity data:', activityData);
+    // console.log('Activity data:', activityData);
     
     // Load activity data from API response
     activityTitle.value = activityData.name || `Активити #${activityId.value}`
@@ -956,7 +956,7 @@ except Exception as error:
       console.error('Error parsing input_params:', error)
       inputParamsData = []
     }
-    console.log(inputParamsData);
+    // console.log(inputParamsData);
     // Load input fields - add unique IDs if not present
     inputFields.value = inputParamsData.map((field: ApiInputParam, index: number) => ({
       id: (Date.now() + index).toString(),
@@ -1017,14 +1017,14 @@ except Exception as error:
     // No changes initially for loaded activities
     hasChanges.value = false
     
-    console.log('Activity data loaded successfully:', {
-      id: activityData.id,
-      name: activityData.name,
-      counter: activityData.counter,
-      inputFields: inputParamsData.length,
-      outputFields: outputParamsData.length,
-      codeLength: decodedCode.length
-    })
+    // console.log('Activity data loaded successfully:', {
+    //   id: activityData.id,
+    //   name: activityData.name,
+    //   counter: activityData.counter,
+    //   inputFields: inputParamsData.length,
+    //   outputFields: outputParamsData.length,
+    //   codeLength: decodedCode.length
+    // })
     
   } catch (error) {
     console.error('Error loading activity data:', error)
