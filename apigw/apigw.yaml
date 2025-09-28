@@ -93,4 +93,4 @@ paths:
         http_code: 200
         type: dummy
         content: 
-          '*': ok
+          '*': ok 
