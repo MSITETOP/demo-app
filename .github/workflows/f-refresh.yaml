@@ -25,10 +25,14 @@ jobs:
           runtime: 'python312'
           memory: '256Mb'
           entrypoint: 'index.handler'
-          execution-timeout: 60
+          execution-timeout: 600
           source-root: ./functions/refresh
           include: |
             ../libs/*
             index.py  
             requirements.txt
+          secrets: |
+            ydb_database=e6q5achceau2ur430mlu/latest/ydb_database
+            client_secret=e6q5achceau2ur430mlu/latest/client_secret
+            client_id=e6q5achceau2ur430mlu/latest/client_id
 
