@@ -29,5 +29,5 @@ jobs:
             functions/refresh/requirements.txt
           secrets: |
             ydb_database=le6q5achceau2ur430mlu/latest/ydb_database
-            client_secret=e6q5achceau2ur430mlu/latest/client_secret
+            client_secret=le6q5achceau2ur430mlu/latest/client_secret
             client_id=le6q5achceau2ur430mlu/latest/client_id
