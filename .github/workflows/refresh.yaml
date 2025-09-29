@@ -18,7 +18,7 @@ jobs:
         uses: yc-actions/yc-sls-function@v4
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
-          folder-id: 'b1gcfvr4j5v19q1pbtav
+          folder-id: 'b1gcfvr4j5v19q1pbtav'
           function-name: 'refresh'
           runtime: 'python312'
           memory: '256Mb'
