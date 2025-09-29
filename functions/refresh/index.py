@@ -4,7 +4,7 @@ from libs.db import getPortals,increaseRefreshCount, portalUpdate
 from b24pysdk import BitrixToken, BitrixApp
 from b24pysdk.error import BitrixAPIError, BitrixTimeout
 
-def handler(event, context): 
+def handler(event, context):
     bitrix_app = BitrixApp(client_id=os.getenv('client_id'), client_secret=os.getenv('client_secret'))
 
     portals = getPortals()
