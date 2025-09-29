@@ -21,7 +21,7 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           service-account: 'aje6dehln13ntd0urarq'
           folder-id: 'b1gcfvr4j5v19q1pbtav'
-          function-name: 'refresh'
+          function-name: 'install'
           runtime: 'python312'
           memory: '256Mb'
           entrypoint: 'index.handler'
