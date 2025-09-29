@@ -25,7 +25,12 @@ jobs:
           runtime: 'python312'
           memory: '256Mb'
           entrypoint: 'index.handler'
+          working-directory: functions/refresh
           include: |
-            functions/libs/*
-            functions/refresh/index.py  
-            functions/refresh/requirements.txt
+            ../libs/*
+            index.py  
+            requirements.txt
+          secrets: |
+            ydb_database=e6q5achceau2ur430mlu/latest/ydb_database
+            client_secret=e6q5achceau2ur430mlu/latest/client_secret
+            client_id=e6q5achceau2ur430mlu/latest/client_id
