@@ -8,6 +8,7 @@ on:
       - ".github/**"
       - "apigw/**"
       - "functions/**"
+  workflow_dispatch:
 
 jobs:
   deploy:
