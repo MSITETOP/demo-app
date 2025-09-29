@@ -4,7 +4,7 @@ import base64
 import requests
 from urllib.parse import parse_qs
 from libs.applogs import logger
-from libs.db import pool, install_app
+from libs.db import pool, installApp
 
 async def handler(event, context):
     postQuery = base64.b64decode(event.get("body").encode('ascii')).decode('ascii')
@@ -25,9 +25,9 @@ async def handler(event, context):
             refresh_token = arPost['auth[refresh_token]']
 
     try:
-        install_app(pool, member_id, client_endpoint, access_token, refresh_token)
+        installApp(pool, member_id, client_endpoint, access_token, refresh_token)
     except Exception as e:
-        logger.error(f"install_app {e}") 
+        logger.error(f"installApp {e}") 
         
     try:
         host = event.get('headers').get('Host')

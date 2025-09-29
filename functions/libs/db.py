@@ -94,7 +94,7 @@ def getPortals():
             return result[0].rows
     return pool.retry_operation_sync(callee)
 
-def install_app(session_pool, member_id, client_endpoint, access_token, refresh_token):
+def installApp(session_pool, member_id, client_endpoint, access_token, refresh_token):
     def callee(session):
             query = f"""
                 DECLARE $member_id AS Utf8;
