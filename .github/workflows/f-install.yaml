@@ -1,0 +1,38 @@
+name: Function install
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "functions/install/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy Function
+        id: sls-func
+        uses: yc-actions/yc-sls-function@v4
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          service-account: 'aje6dehln13ntd0urarq'
+          folder-id: 'b1gcfvr4j5v19q1pbtav'
+          function-name: 'refresh'
+          runtime: 'python312'
+          memory: '256Mb'
+          entrypoint: 'index.handler'
+          execution-timeout: 6
+          source-root: ./functions/refresh
+          include: |
+            ../libs/*
+            index.py  
+            requirements.txt
+          secrets: |
+            ydb_database=e6q5achceau2ur430mlu/latest/ydb_database
+            client_secret=e6q5achceau2ur430mlu/latest/client_secret
+            client_id=e6q5achceau2ur430mlu/latest/client_id
+
