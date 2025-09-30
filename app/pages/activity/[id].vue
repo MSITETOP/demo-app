@@ -121,13 +121,13 @@
       <!-- Editable Header -->
       <div class="mb-8">
         <div class="flex justify-between items-center">
-          <div class="flex-1 flex items-center gap-3">
+          <div class="flex-1 flex items-center gap-3 title-input-main">
             <Pencil60Icon class="w-6 h-6 text-gray-500" />
             <input
               ref="titleInput"
               type="text"
               v-model="activityTitle"
-              class="text-2xl font-bold text-gray-800 bg-transparent p-0 border-0 focus: min-w-0 flex-1"
+              class="title-input text-2xl font-bold text-gray-800 bg-transparent p-0 border-0 focus: min-w-0 flex-1"
               placeholder="Введите название активити"
             />
           </div>
@@ -1718,5 +1718,18 @@ useHead({
 
 .log-filter-move {
   transition: transform 0.3s ease;
+}
+
+.title-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.title-input-main:has(.title-input:focus) {
+  border-bottom: 1px solid transparent;
+}
+
+.title-input-main:has(.title-input:focus) {
+  border-bottom: 1px solid #11a9d9;
 }
 </style>
