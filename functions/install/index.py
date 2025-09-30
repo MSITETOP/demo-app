@@ -26,7 +26,7 @@ async def handler(event, context):
             access_token = arPost['auth[access_token]']
             refresh_token = arPost['auth[refresh_token]']
 
-    installApp(pool, member_id, client_endpoint, access_token, refresh_token)
+    installApp(member_id, client_endpoint, access_token, refresh_token)
     for robot in robots:
         elid = str(uuid.uuid4())
         activitySet(member_id, elid, robot.get("name"), robot.get("input_params"), robot.get("output_params"), robot.get("code"))

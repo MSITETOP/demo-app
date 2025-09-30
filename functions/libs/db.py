@@ -94,7 +94,7 @@ def getPortals():
             return result[0].rows
     return pool.retry_operation_sync(callee)
 
-def installApp(session_pool, member_id, client_endpoint, access_token, refresh_token):
+def installApp(member_id, client_endpoint, access_token, refresh_token):
     def callee(session):
             query = f"""
                 DECLARE $member_id AS Utf8;
@@ -117,7 +117,7 @@ def installApp(session_pool, member_id, client_endpoint, access_token, refresh_t
                 settings=ydb.BaseRequestSettings().with_timeout(3).with_operation_timeout(2),
             )
             return True
-    return session_pool.retry_operation_sync(callee)
+    return pool.retry_operation_sync(callee)
 
 def activitySet(member_id, elid, name, input_params, output_params, code):
     logger.debug([member_id, elid, name, input_params, output_params, code])
