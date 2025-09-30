@@ -90,7 +90,7 @@ paths:
   /uninstall:
     x-yc-apigateway-any-method:
       x-yc-apigateway-integration:
-        http_code: 200
-        type: dummy
-        content: 
-          '*': ok 
+        payload_format_version: '1.0'
+        function_id: d4eigoe9u737c7r5edkm
+        tag: $latest
+        type: cloud_functions
