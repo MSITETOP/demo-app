@@ -12,6 +12,9 @@ async def handler(event, context):
       for k, v in parse_qs(postQuery).items())
        
     logger.debug(arPost)
+
+    if arPost.get("data[CLEAN]", "0") == "1":
+        pass
         
     return {
         'statusCode': 200,
