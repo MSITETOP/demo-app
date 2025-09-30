@@ -1,0 +1,6 @@
+b24pysdk
+pillow
+numpy
+qrcode
+matplotlib
+requests

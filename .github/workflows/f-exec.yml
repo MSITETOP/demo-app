@@ -1,0 +1,32 @@
+name: Function exec
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "functions/exec/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy Function
+        id: sls-func
+        uses: yc-actions/yc-sls-function@v4
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+          folder-id: 'b1gcfvr4j5v19q1pbtav'
+          function-name: 'exec'
+          runtime: 'python312'
+          memory: '256Mb'
+          entrypoint: 'index.handler'
+          execution-timeout: 300
+          source-root: ./functions/exec
+          include: |
+            ../libs/applogs.py
+            *
+
