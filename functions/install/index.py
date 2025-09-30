@@ -1,10 +1,12 @@
 import os
+import uuid
 import json
 import base64
 import requests
 from urllib.parse import parse_qs
 from libs.applogs import logger
-from libs.db import pool, installApp
+from libs.db import installApp, activitySet
+from robots import robots
 
 async def handler(event, context):
     postQuery = base64.b64decode(event.get("body").encode('ascii')).decode('ascii')
@@ -24,10 +26,10 @@ async def handler(event, context):
             access_token = arPost['auth[access_token]']
             refresh_token = arPost['auth[refresh_token]']
 
-    try:
-        installApp(pool, member_id, client_endpoint, access_token, refresh_token)
-    except Exception as e:
-        logger.error(f"installApp {e}") 
+    installApp(pool, member_id, client_endpoint, access_token, refresh_token)
+    for robot in robots:
+        elid = str(uuid.uuid4())
+        activitySet(member_id, elid, robot.get("name"), robot.get("input_params"), robot.get("output_params"), robot.get("code"))
         
     try:
         host = event.get('headers').get('Host')
