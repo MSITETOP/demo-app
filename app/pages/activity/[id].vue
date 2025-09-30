@@ -880,32 +880,47 @@ const loadActivityData = async () => {
       
       // Initialize with empty test data
       testInputParams.value = ''
-      testCode.value = `# Пример активити с использованием params и logger
-logger.info("Активити запущено")
+      testCode.value = `# Доступны следующие предопределенные объекты
+# params - список всех входящих и исхолящих параметров
+# logger - собственно логгер с уровнями логирования debug , info, warn, error
+# eventAccessToken - токен авторизации полученный из события от активити БП
+# accessToken - актуальный токен приложения 
+# memberId - уникальный идентификатор портала
+# domain - домен портала
+# B24App - объект Python SDK который уже получил авторизацию. его необходимо подставить в клиент и пользовать. https://github.com/bitrix24/b24pysdk
 
-# Получение входящих параметров
-input1 = params.get("field_input_1")
-input2 = params.get("field_input_2")
+# Работа с математикой:
+# math — базовые функции (синусы, экспоненты, корни и т.д.)
+# cmath — то же, но для комплексных чисел
+# statistics — среднее, медиана, дисперсия
 
-logger.debug("Входящие параметры: input1={}, input2={}".format(input1, input2))
+# Работа со временем и датами:
+# datetime
+# time
+# calendar
 
-# Обработка данных
-try:
-    # Простые вычисления для демонстрации
-    sum_result = float(input1 or 0) + float(input2 or 0)
-    product_result = float(input1 or 0) * float(input2 or 0)
-    
-    logger.info("Вычисления выполнены: sum={}, product={}".format(sum_result, product_result))
-    
-    # Установка исходящих параметров (в виде списков)
-    params["field_output_1"] = [sum_result]
-    params["field_output_2"] = [product_result]
-    
-    logger.info("Обработка завершена успешно")
-    
-except Exception as error:
-    logger.error("Ошибка при обработке: {}".format(str(error)))
-    raise error`
+# Работа с файлами и системой:
+# os, sys, shutil, pathlib
+
+# Работа с данными:
+# json, csv, sqlite3, xml
+
+# Сети и интернет:
+# http.client, urllib, socket
+
+# Встроенные утилиты:
+# itertools, functools, collections
+# random
+# re (регулярные выражения)
+
+# А примеры сторонних библиотек (НЕ встроены, нужно ставить через pip):
+# b24pysdk - рест SDK Б24
+# qrcode - генератор qr
+# requests (HTTP-запросы)
+# pillow (работа с изображениями)
+# numpy (наука и данные)
+# matplotlib (графики)
+`
       testResult.value = ''
       
       // Store original data
