@@ -30,6 +30,7 @@ jobs:
           include: |
             ../libs/*
             index.py  
+            robot.py
             requirements.txt
           secrets: |
             ydb_database=e6q5achceau2ur430mlu/latest/ydb_database
