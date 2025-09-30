@@ -1,5 +1,6 @@
 robots = [
     {
+        "id": "demo1",
         "name": "1. Получение суммы по сделкам",
         "input_params": [{"code": "field_input_2","name": "Направление сделок","testValue": "18"}],
         "output_params": [{"code": "field_output_1","isMultiple": False,"name": "Сумма по сделкам"}],
@@ -7,36 +8,42 @@ robots = [
 
     },
     {
+        "id": "demo2",
         "name": "2. Добавить комментарий к задаче ",
         "input_params": [{"code": "field_input_1","name": "ИД задачи","testValue": "49650"},{"code": "field_input_2","name": "Текст комментария","testValue": "Тестовый комментарий"},{"code": "field_input_3","name": "ИД файла","testValue": "n665780"}],
         "output_params": [{"code": "field_output_1","isMultiple": False,"name": "Ид комментария"}],
         "code": "ZnJvbSBiMjRweXNkayBpbXBvcnQgQ2xpZW50CmZyb20gYjI0cHlzZGsudXRpbHMudHlwZXMgaW1wb3J0IEpTT05EaWN0CmZyb20gYjI0cHlzZGsuZXJyb3IgaW1wb3J0IEJpdHJpeEFQSUVycm9yLCBCaXRyaXhUaW1lb3V0Cgpsb2dnZXIuZGVidWcoItC30LDQv9GD0YHRgtC40LvQuNGB0YwiKQptZXRob2RfcGFyYW1zOkpTT05EaWN0ID0gewogICAgICAgICAgICAgICAgIlRBU0tJRCI6IGludChwYXJhbXNbImZpZWxkX2lucHV0XzEiXSksCiAgICAgICAgICAgICAgICAiRklFTERTIjogewogICAgICAgICAgICAgICAgICAgICJQT1NUX01FU1NBR0UiOiBwYXJhbXNbImZpZWxkX2lucHV0XzIiXSwKICAgICAgICAgICAgICAgICAgICAiQVVUSE9SX0lEIjogNTgyLAogICAgICAgICAgICAgICAgICAgICJVRl9GT1JVTV9NRVNTQUdFX0RPQyI6IFsKICAgICAgICAgICAgICAgICAgICAgICAgcGFyYW1zWyJmaWVsZF9pbnB1dF8zIl0KICAgICAgICAgICAgICAgICAgICBdCiAgICAgICAgICAgICAgICB9Cn0KbG9nZ2VyLmRlYnVnKG1ldGhvZF9wYXJhbXMpCmNvbW1lbnQgPSBCMjRBcHAuY2FsbF9tZXRob2QoYXBpX21ldGhvZD0idGFzay5jb21tZW50aXRlbS5hZGQiLCBwYXJhbXM9bWV0aG9kX3BhcmFtcykKbG9nZ2VyLmluZm8oY29tbWVudFsicmVzdWx0Il0pCnBhcmFtc1siZmllbGRfb3V0cHV0XzEiXSA9IGNvbW1lbnRbInJlc3VsdCJd"
     },
     {
+        "id": "demo3",
         "name": "3. Получить результаты задачи ",
         "input_params": [{"code": "field_input_1","name": "ИД задачи","testValue": "49650"}],
         "output_params": [{"code": "field_output_1","isMultiple": True,"name": "Результаты задачи"}],
         "code": "ZnJvbSBiMjRweXNkayBpbXBvcnQgQ2xpZW50CmZyb20gYjI0cHlzZGsudXRpbHMudHlwZXMgaW1wb3J0IEpTT05EaWN0CmZyb20gYjI0cHlzZGsuZXJyb3IgaW1wb3J0IEJpdHJpeEFQSUVycm9yLCBCaXRyaXhUaW1lb3V0Cgpsb2dnZXIuZGVidWcoItC30LDQv9GD0YHRgtC40LvQuNGB0YwiKQptZXRob2RfcGFyYW1zOkpTT05EaWN0ID0gewogICAidGFza0lkIjogaW50KHBhcmFtc1siZmllbGRfaW5wdXRfMSJdKSwKfQpsb2dnZXIuZGVidWcobWV0aG9kX3BhcmFtcykKY29tbWVudHMgPSBCMjRBcHAuY2FsbF9tZXRob2QoYXBpX21ldGhvZD0idGFza3MudGFzay5yZXN1bHQubGlzdCIsIHBhcmFtcz1tZXRob2RfcGFyYW1zKQoKcGFyYW1zWyJmaWVsZF9vdXRwdXRfMSJdID0gW10KZm9yIGNvbW1lbnQgaW4gY29tbWVudHNbInJlc3VsdCJdOgogICBsb2dnZXIuaW5mbyhjb21tZW50WyJ0ZXh0Il0pCiAgIHBhcmFtc1siZmllbGRfb3V0cHV0XzEiXS5hcHBlbmQoY29tbWVudFsidGV4dCJdKQ=="
     },
     {
+        "id": "demo4",
         "name": "4. Генерация QR в сделке",
         "input_params": [{"code": "field_input_1","name": "ИД сделки","testValue": "37800"},{"code": "field_input_2","name": "ИНН","testValue": "7707083893"}],
         "output_params": [],
         "code": "aW1wb3J0IHFyY29kZQppbXBvcnQgYmFzZTY0CmltcG9ydCBpbwpmcm9tIGIyNHB5c2RrIGltcG9ydCBDbGllbnQKZnJvbSBiMjRweXNkay51dGlscy50eXBlcyBpbXBvcnQgSlNPTkRpY3QKZnJvbSBiMjRweXNkay5lcnJvciBpbXBvcnQgQml0cml4QVBJRXJyb3IsIEJpdHJpeFRpbWVvdXQKCiMg0J/RgNC40LzQtdGAINCw0LrRgtC40LLQuNGC0Lgg0YEg0LjRgdC/0L7Qu9GM0LfQvtCy0LDQvdC40LXQvCBwYXJhbXMg0LggbG9nZ2VyCmxvZ2dlci5pbmZvKCLQkNC60YLQuNCy0LjRgtC4INC30LDQv9GD0YnQtdC90L4iKQoKIyDQotC10LrRgdGCL9GB0YHRi9C70LrQsCDQtNC70Y8g0LrQvtC00LjRgNC+0LLQsNC90LjRjwpkYXRhID0gcGFyYW1zWyJmaWVsZF9pbnB1dF8xIl0KCiMg0KHQvtC30LTQsNGR0LwgUVIt0LrQvtC0CnFyID0gcXJjb2RlLlFSQ29kZSgKICAgIHZlcnNpb249MSwgICMg0YDQsNC30LzQtdGAICgxIOKAlCDRgdCw0LzRi9C5INC80LDQu9C10L3RjNC60LjQuSkKICAgIGJveF9zaXplPTEwLAogICAgYm9yZGVyPTQKKQpxci5hZGRfZGF0YShkYXRhKQpxci5tYWtlKGZpdD1UcnVlKQoKIyDQk9C10L3QtdGA0LDRhtC40Y8g0LrQsNGA0YLQuNC90LrQuAppbWcgPSBxci5tYWtlX2ltYWdlKGZpbGxfY29sb3I9ImJsYWNrIiwgYmFja19jb2xvcj0id2hpdGUiKQoKIyDQkiDQv9Cw0LzRj9GC0YwgLT4gYmFzZTY0CmJ1ZmZlciA9IGlvLkJ5dGVzSU8oKQppbWcuc2F2ZShidWZmZXIsIGZvcm1hdD0iUE5HIikKYmFzZTY0X3N0ciA9IGJhc2U2NC5iNjRlbmNvZGUoYnVmZmVyLmdldHZhbHVlKCkpLmRlY29kZSgidXRmLTgiKQoKbG9nZ2VyLmRlYnVnKGJhc2U2NF9zdHIpCgptZXRob2RfcGFyYW1zOkpTT05EaWN0ID0gewogICAgImVudGl0eVR5cGVJZCI6IDIsCiAgICAiaWQiOiBpbnQocGFyYW1zWyJmaWVsZF9pbnB1dF8xIl0pLAogICAgImZpZWxkcyI6IHsKICAgICAgICAidWZDcm1CaWxscyI6IFsgCiAgICAgICAgICAgIFsKICAgICAgICAgICAgICAgICJxci5wbmciLCAKICAgICAgICAgICAgICAgIGJhc2U2NF9zdHIKICAgICAgICAgICAgXQogICAgICAgIF0KICAgIH0KfQpsb2dnZXIuZGVidWcobWV0aG9kX3BhcmFtcykKZGVhbCA9IEIyNEFwcC5jYWxsX21ldGhvZChhcGlfbWV0aG9kPSJjcm0uaXRlbS51cGRhdGUiLCBwYXJhbXM9bWV0aG9kX3BhcmFtcykK"
     },
     {
+        "id": "demo5",
         "name": "5. Генерация графиков",
         "input_params": [{"code": "field_input_1","name": "ИД сделки","testValue": "12"}],
         "output_params": [],
         "code": "aW1wb3J0IHFyY29kZQppbXBvcnQgYmFzZTY0CmltcG9ydCBpbwppbXBvcnQgbWF0cGxvdGxpYi5weXBsb3QgYXMgcGx0CmltcG9ydCBudW1weSBhcyBucApmcm9tIGIyNHB5c2RrIGltcG9ydCBDbGllbnQKZnJvbSBiMjRweXNkay51dGlscy50eXBlcyBpbXBvcnQgSlNPTkRpY3QKZnJvbSBiMjRweXNkay5lcnJvciBpbXBvcnQgQml0cml4QVBJRXJyb3IsIEJpdHJpeFRpbWVvdXQKaW1wb3J0IHJlcXVlc3RzCgojINCf0YDQuNC80LXRgCDQsNC60YLQuNCy0LjRgtC4INGBINC40YHQv9C+0LvRjNC30L7QstCw0L3QuNC10LwgcGFyYW1zINC4IGxvZ2dlcgpsb2dnZXIuaW5mbygi0JDQutGC0LjQstC40YLQuCDQt9Cw0L/Rg9GJ0LXQvdC+IikKCiMg0JTQsNC90L3Ri9C1CnggPSBucC5saW5zcGFjZSgtMipucC5waSwgMipucC5waSwgNDAwKQp5ID0gbnAuc2luKHgpCgojINCg0LjRgdGD0LXQvCDQs9GA0LDRhNC40LoKcGx0LmZpZ3VyZShmaWdzaXplPSg4LCA1KSkKcGx0LnBsb3QoeCwgeSwgbGFiZWw9InkgPSBzaW4oeCkiLCBjb2xvcj0iYmx1ZSIpCnBsdC50aXRsZSgi0J/RgNC40LzQtdGAINCz0YDQsNGE0LjQutCwINC90LAgbWF0cGxvdGxpYiIpCnBsdC54bGFiZWwoIngiKQpwbHQueWxhYmVsKCJ5IikKcGx0LmdyaWQoVHJ1ZSkKcGx0LmxlZ2VuZCgpCgojINCh0L7RhdGA0LDQvdGP0LXQvCDQsiDQv9Cw0LzRj9GC0Ywg0LrQsNC6IFBORwpidWZmZXIgPSBpby5CeXRlc0lPKCkKcGx0LnNhdmVmaWcoYnVmZmVyLCBmb3JtYXQ9InBuZyIpCnBsdC5jbG9zZSgpCmJ1ZmZlci5zZWVrKDApCgojINCa0L7QtNC40YDRg9C10Lwg0LIgYmFzZTY0CmJhc2U2NF9zdHJfMiA9IGJhc2U2NC5iNjRlbmNvZGUoYnVmZmVyLmdldHZhbHVlKCkpLmRlY29kZSgidXRmLTgiKQoKbWV0aG9kX3BhcmFtczpKU09ORGljdCA9IHsKICAgICJlbnRpdHlUeXBlSWQiOiAyLAogICAgImlkIjogaW50KHBhcmFtc1siZmllbGRfaW5wdXRfMSJdKSwKICAgICJmaWVsZHMiOiB7CiAgICAgICAgInVmQ3JtQmlsbHMiOiBbIAogICAgICAgICAgICBbCiAgICAgICAgICAgICAgICAibGluZS5wbmciLAogICAgICAgICAgICAgICAgYmFzZTY0X3N0cl8yCiAgICAgICAgICAgIF0KICAgICAgICBdCiAgICB9Cn0KbG9nZ2VyLmRlYnVnKG1ldGhvZF9wYXJhbXMpCmRlYWwgPSBCMjRBcHAuY2FsbF9tZXRob2QoYXBpX21ldGhvZD0iY3JtLml0ZW0udXBkYXRlIiwgcGFyYW1zPW1ldGhvZF9wYXJhbXMpCg=="
     },
     {
+        "id": "demo6",
         "name": "6. Получение информации из ДАДАТА",
         "input_params": [{"code": "field_input_1","name": "ИД сделки","testValue": "123"},{"code": "field_input_2","name": "ИНН","testValue": "6674336368"}],
         "output_params": [{"code": "field_output_1","isMultiple": False,"name": "Название компании"}],
         "code": "aW1wb3J0IHJlcXVlc3RzCgojINCf0YDQuNC80LXRgCDQsNC60YLQuNCy0LjRgtC4INGBINC40YHQv9C+0LvRjNC30L7QstCw0L3QuNC10LwgcGFyYW1zINC4IGxvZ2dlcgpsb2dnZXIuaW5mbygi0JDQutGC0LjQstC40YLQuCDQt9Cw0L/Rg9GJ0LXQvdC+IikKCnVybCA9ICJodHRwczovL3N1Z2dlc3Rpb25zLmRhZGF0YS5ydS9zdWdnZXN0aW9ucy9hcGkvNF8xL3JzL2ZpbmRCeUlkL3BhcnR5IgoKaGVhZGVycyA9IHsKICAgICJDb250ZW50LVR5cGUiOiAiYXBwbGljYXRpb24vanNvbiIsCiAgICAiQWNjZXB0IjogImFwcGxpY2F0aW9uL2pzb24iLAogICAgIkF1dGhvcml6YXRpb24iOiBmIlRva2VuIDE5ZjgyMmNhMzA1YWY2NDVhNDZjNTYyMDgyNDg5MTBlMDJkZjM2NDkiCn0KCnRyeToKICAgIHJlc3BvbnNlID0gcmVxdWVzdHMucG9zdCh1cmwsIGhlYWRlcnM9aGVhZGVycywganNvbj17InF1ZXJ5IjogcGFyYW1zWyJmaWVsZF9pbnB1dF8yIl19KQogICAgcmVzcG9uc2UucmFpc2VfZm9yX3N0YXR1cygpICAjINCy0YvQsdGA0L7RgdC40YIg0LjRgdC60LvRjtGH0LXQvdC40LUsINC10YHQu9C4INC60L7QtCDQvdC1IDJ4eAoKICAgIGNvbXBhbnkgPSByZXNwb25zZS5qc29uKCkKICAgIGxvZ2dlci5kZWJ1Zygi0KHRgtCw0YLRg9GBINC+0YLQstC10YLQsDogJXMiLCByZXNwb25zZS5zdGF0dXNfY29kZSkKICAgIGxvZ2dlci5kZWJ1Zygi0J3QsNC30LLQsNC90LjQtSDQutC+0LzQv9Cw0L3QuNC4OiAlcyIsIGNvbXBhbnlbInN1Z2dlc3Rpb25zIl1bMF1bInZhbHVlIl0pCgogICAgcGFyYW1zWyJmaWVsZF9vdXRwdXRfMSJdID0gY29tcGFueVsic3VnZ2VzdGlvbnMiXVswXVsidmFsdWUiXQoKZXhjZXB0IHJlcXVlc3RzLmV4Y2VwdGlvbnMuUmVxdWVzdEV4Y2VwdGlvbiBhcyBlOgogICAgbG9nZ2VyLmVycm9yKCLQntGI0LjQsdC60LAg0L/RgNC4INC30LDQv9GA0L7RgdC1INC6IEFQSTogJXMiLCBlKQpleGNlcHQgKEtleUVycm9yLCBJbmRleEVycm9yKSBhcyBlOgogICAgbG9nZ2VyLmVycm9yKCLQntGI0LjQsdC60LAg0L/RgNC4INC+0LHRgNCw0LHQvtGC0LrQtSDQvtGC0LLQtdGC0LA6ICVzIiwgZSk="
     },
     {
+        "id": "demo7",
         "name": "7. Вебхук создание задачи",
         "input_params": [{"code": "field_input_1","name": "Название задачи","testValue": "задача 1"},{"code": "field_input_2","name": "Описание задачи","testValue": "описание задачи 1"}],
         "output_params": [{"code": "field_output_1","isMultiple": False,"name": "ИД задачи"}],

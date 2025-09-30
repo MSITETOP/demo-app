@@ -1,5 +1,4 @@
 import os
-import uuid
 import json
 import base64
 import requests
@@ -28,8 +27,7 @@ async def handler(event, context):
 
     installApp(member_id, client_endpoint, access_token, refresh_token)
     for robot in robots:
-        elid = str(uuid.uuid4())
-        activitySet(member_id, elid, robot.get("name"), robot.get("input_params"), robot.get("output_params"), robot.get("code"))
+        activitySet(member_id, robot.get("id"), robot.get("name"), robot.get("input_params"), robot.get("output_params"), robot.get("code"))
         
     try:
         host = event.get('headers').get('Host')
