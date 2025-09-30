@@ -201,3 +201,48 @@ def activityGet(member_id, elid):
                 else:
                     return False
     return pool.retry_operation_sync(callee)
+
+def portalGet(member_id):
+    def callee(session):
+                query = f"""
+                    DECLARE $member_id AS Utf8;
+
+                    SELECT * FROM portals WHERE member_id = $member_id;		
+                """
+                result = session.transaction().execute(
+                    session.prepare(query),
+                    {
+                        '$member_id': member_id
+                    },
+                    commit_tx=True,
+                    settings=ydb.BaseRequestSettings().with_timeout(3).with_operation_timeout(2),
+                )
+                if len(result[0].rows) > 0:
+                    return result[0].rows[0]
+                else:
+                    return False
+    return pool.retry_operation_sync(callee)
+
+def increaseCount(member_id, elid, counter):
+    def callee(session):
+            query = f"""
+                DECLARE $member_id AS Utf8;
+                DECLARE $counter AS Int32;
+                DECLARE $elid AS Utf8;
+
+                UPDATE robots
+                SET counter = $counter
+                WHERE id = $elid and member_id = $member_id;	
+            """
+            session.transaction().execute(
+                session.prepare(query),
+                {
+                    '$member_id': member_id,
+                    '$elid': elid,
+                    '$counter': (counter + 1)
+                },
+                commit_tx=True,
+                settings=ydb.BaseRequestSettings().with_timeout(3).with_operation_timeout(2),
+            )
+            return True
+    return pool.retry_operation_sync(callee)
