@@ -1,11 +1,11 @@
-name: Function activity-set
+name: Function activity-get
 
 on:
   push:
     branches:
       - main
     paths:
-      - "functions/activity-set/**"
+      - "functions/activity-get/**"
   workflow_dispatch:
 
 jobs:
@@ -21,12 +21,12 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
           service-account: 'aje6dehln13ntd0urarq'
           folder-id: 'b1gcfvr4j5v19q1pbtav'
-          function-name: 'activity-set'
+          function-name: 'activity-get'
           runtime: 'python312'
           memory: '256Mb'
           entrypoint: 'index.handler'
           execution-timeout: 6
-          source-root: ./functions/activity-set
+          source-root: ./functions/activity-get
           include: |
             ../libs/*
             *

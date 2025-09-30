@@ -177,3 +177,27 @@ def activityDel(member_id, elid):
                 )
                 return True
     return pool.retry_operation_sync(callee)
+
+def activityGet(member_id, elid):
+    logger.debug([member_id, elid])
+    def callee(session):
+                query = f"""
+                    DECLARE $member_id AS Utf8;
+                    DECLARE $elid AS Utf8;
+
+                    SELECT * FROM robots WHERE id = $elid and member_id = $member_id ;		
+                """
+                result = session.transaction().execute(
+                    session.prepare(query),
+                    {
+                        '$elid': elid,
+                        '$member_id': member_id
+                    },
+                    commit_tx=True,
+                    settings=ydb.BaseRequestSettings().with_timeout(3).with_operation_timeout(2),
+                )
+                if len(result[0].rows) > 0:
+                    return result[0].rows[0]
+                else:
+                    return False
+    return pool.retry_operation_sync(callee)
