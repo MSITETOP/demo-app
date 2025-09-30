@@ -122,8 +122,9 @@
       <div class="mb-8">
         <div class="flex justify-between items-center">
           <div class="flex-1 flex items-center gap-3 title-input-main">
-            <Pencil60Icon class="w-6 h-6 text-gray-500" />
+            <label for="activity-title"><Pencil60Icon class="w-6 h-6 text-gray-500" /></label>
             <input
+              id="activity-title"
               ref="titleInput"
               type="text"
               v-model="activityTitle"
