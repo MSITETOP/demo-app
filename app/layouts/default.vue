@@ -60,7 +60,7 @@ onMounted(async () => {
       <!-- Right side: Instructions and support -->
       <div class="flex items-center gap-6 mr-4">
         <B24Button
-          to="https://vkvideo.ru/playlist/-24162245_45684532"
+          to="https://ipgpromo.ru/lp/roborest-faq/"
           :icon="RecordVideoIcon"
           color="air-tertiary-no-accent"
           target="_blank"
